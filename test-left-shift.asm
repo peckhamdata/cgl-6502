@@ -1,11 +1,19 @@
-// given a row of the screen looks like this:
 
-// 'thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG12345678'
+        // Screen Colour
+        .var white=1
+        lda #white
+        sta $d020
+        sta $d021
+this:   jmp this
 
-// when we move it left
+		// given a row of the screen looks like this:
 
-//  then we expect it to look like this:
+		orginal: .text "thequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG12345678"
 
-// 'hequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG12345678 '
+		// when we move it left
 
-// border goes red if it fails, green if it passes
+		//  then we expect it to look like this:
+
+		expected: .text "hequickbrownfoxjumpedoverthelazydogTHEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG12345678 "
+
+		// border goes red if it fails, green if it passes
