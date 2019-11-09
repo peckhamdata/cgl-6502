@@ -3,7 +3,6 @@
         .var white=1
         .var green=5
         .var red=2
-        .var screen=$0400
         lda #white
         sta $d020
         sta $d021
@@ -18,7 +17,7 @@ loop:   lda original,y
         bne loop
 
         // when we move it left
-
+        jsr screen_left
         //  then we expect it to look like expected
 
         ldy #$00
@@ -26,7 +25,7 @@ comp:   lda screen,y
         cmp expected,y
         bne fail
         iny
-        cpy #$28
+        cpy #$27
         bne comp
         // border goes red if it fails, green if it passes
 pass:   lda #green
