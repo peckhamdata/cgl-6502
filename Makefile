@@ -5,6 +5,7 @@ C1541=$(VICE_HOME)/tools/c1541
 PROG=bird
 
 .PHONY: deploy clean
+
 deploy:$(PROG).d64
 	x64 -autoload $(PROG).d64
 

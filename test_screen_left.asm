@@ -3,6 +3,7 @@
         .var white=1
         .var green=5
         .var red=2
+test_screen_left:
         lda #white
         sta $d020
         sta $d021
@@ -58,6 +59,5 @@ pass:   lda #green
 fail:   lda #red
 report: sta $d020
         rts
-        // *=$4000 "Data"
 original: .text "thequickbrownfoxjumpedoverthelazydog1234"
 expected: .text "hequickbrownfoxjumpedoverthelazydog1234 "
