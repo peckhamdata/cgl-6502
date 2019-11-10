@@ -32,14 +32,26 @@ cont:   inx
         // when we move the screen left
         jsr screen_left
         //  then we expect each row to look like expected
-
-        ldy #$00
-comp:   lda screen,y
+        lda #$00
+        sta $02
+        lda #$04
+        sta $03
+        ldx #$00
+com1:   ldy #$00
+comp:   lda ($02),y
         cmp expected,y
         bne fail
         iny
-        cpy #$27
+        cpy #$28
         bne comp
+        lda $02
+        adc #$27
+        sta $02
+        bcc cont2
+        inc $03
+cont2:  inx
+        cpx #$19
+        bne com1
         // border goes red if it fails, green if it passes
 pass:   lda #green
         jmp report
