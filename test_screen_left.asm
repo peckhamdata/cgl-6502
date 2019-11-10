@@ -14,20 +14,20 @@
         sta $02
         lda #$04
         sta $03
-col:    ldy #$00
-line:   lda original,y
+!col:   ldy #$00
+!line:  lda original,y
         sta ($02),y
         iny
         cpy #$28
-        bne line
+        bne !line-
         lda $02
         adc #$27
         sta $02
-        bcc cont
+        bcc !cont+
         inc $03
-cont:   inx
+!cont:  inx
         cpx #$19
-        bne col
+        bne !col-
 
         // when we move the screen left
         jsr screen_left
@@ -37,21 +37,21 @@ cont:   inx
         lda #$04
         sta $03
         ldx #$00
-com1:   ldy #$00
-comp:   lda ($02),y
+!col:   ldy #$00
+!line:  lda ($02),y
         cmp expected,y
         bne fail
         iny
         cpy #$28
-        bne comp
+        bne !line-
         lda $02
         adc #$27
         sta $02
-        bcc cont2
+        bcc !cont+
         inc $03
-cont2:  inx
+!cont:  inx
         cpx #$19
-        bne com1
+        bne !col-
         // border goes red if it fails, green if it passes
 pass:   lda #green
         jmp report

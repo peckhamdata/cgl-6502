@@ -3,22 +3,22 @@ screen_left:    ldx #$00
                 sta $02
                 lda #$04
                 sta $03
-shift_col:      ldy #$00
-shift_line:     inc $02
-shift_2:        lda ($02),y
+row_loop:       ldy #$00
+col_loop:       inc $02
+                lda ($02),y
                 dec $02
-shift_3:        sta ($02),y
+                sta ($02),y
                 iny
                 cpy #$27
-                bne shift_line
+                bne col_loop
                 lda #$20
                 sta ($02),y
                 lda $02
                 adc #$27
                 sta $02
-                bcc shift_cont
+                bcc next_row
                 inc $03
-shift_cont:     inx
+next_row:       inx
                 cpx #$19
-                bne shift_col
+                bne row_loop
                 rts
