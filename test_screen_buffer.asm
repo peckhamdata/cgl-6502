@@ -9,6 +9,11 @@ test_screen_buffer:
 
 // When the left hand column of the buffer is transfered to the right hand column
 // of the screen
+        lda #<buffer
+        sta buffer_lo
+        lda #>buffer
+        sta buffer_hi
+        jsr screen_buffer
 
 // Then the buffer is shifted left one column
 
@@ -82,6 +87,22 @@ buffer: .text "abcdefghij"
         .text "hijklmnopq"
         .text "ijklmnopqr"
         .text "jklmnopqrs"
+        .text "klmnopqrst"
+        .text "lmnopqrstu"
+        .text "mnopqrstuv"
+        .text "nopqrstuvw"
+        .text "opqrstuvwx"
+        .text "pqrstuvwxy"
+        .text "qrstuvwxyz"
+        .text "rstuvwxyza"
+        .text "stuvwxyzab"
+        .text "tuvwxyzabc"
+        .text "uvwxyzabcd"
+        .text "vwxyzabcde"
+        .text "wxyzabcdef"
+        .text "xyzabcdefg"
+        .text "yzabcdefgh"
+        .text "zabcdefghi"
 
 expected_screen: .text "abcdefghijklmnopqrstuvwxy"
 

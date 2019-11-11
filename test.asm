@@ -11,3 +11,4 @@ start:
 .import source "test_screen_left.asm"
 .import source "screen_left.asm"
 .import source "test_screen_buffer.asm"
+.import source "screen_buffer.asm"
