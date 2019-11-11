@@ -11,8 +11,17 @@ start:	ldx #$00
         lda #>buffer
         sta buffer_hi
 		jsr screen_buffer
+        lda #<buffer
+        sta region_lo
+        lda #>buffer
+        sta region_hi
+        lda #$0a
+        sta region_x
+        lda #$19
+        sta region_y
+        jsr region_left
 		inx
-		cpx #$8
+		cpx #$20
 		bne !loop-
 		rts
 
@@ -21,6 +30,7 @@ start:	ldx #$00
 
 .import source "screen_left.asm"
 .import source "screen_buffer.asm"
+.import source "region_left.asm"
 
 buffer: .text "abcdefghij"
         .text "bcdefghijk"
