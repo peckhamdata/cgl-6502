@@ -5,6 +5,8 @@ screen_hi: .byte 0
 char:      .byte 0
 screen_buffer:  
 
+        txa
+        pha
         ldx #$00
         ldy #$00
         lda #<screen_right
@@ -41,5 +43,7 @@ screen_buffer:
         inc screen_hi
 !cont:  inx
         cpx #$19
-        bne !loop-      
+        bne !loop-
+        pla
+        tax      
         rts
