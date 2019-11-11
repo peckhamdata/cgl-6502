@@ -4,6 +4,11 @@
 
 :BasicUpstart2(start)
 
-start:
+start:	ldx #$00
+!loop:	jsr screen_left
+		inx
+		cpx #$8
+		bne !loop-
+		rts
 
 .import source "screen_left.asm"

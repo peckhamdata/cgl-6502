@@ -1,4 +1,6 @@
-screen_left:    ldx #$00
+screen_left:    txa
+                pha
+                ldx #$00
                 lda #$00
                 sta $02
                 lda #$04
@@ -21,4 +23,6 @@ col_loop:       inc $02
 next_row:       inx
                 cpx #$19
                 bne row_loop
+                pla
+                tax
                 rts
