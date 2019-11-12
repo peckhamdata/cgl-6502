@@ -37,15 +37,15 @@ test_double_buffer:
         sta buffer_x
         lda b1_y
         sta buffer_y
+        ldx buffer_x
 !loop:  jsr double_buffer
-        lda buffer_active_fill
+        dex
         bne !loop-
  
 // Then it should switch to the second one
         lda buffer_active_lo
         cmp #<buffer_2
         bne !fail+
-
         lda buffer_active_hi
         cmp #>buffer_2
         bne !fail+

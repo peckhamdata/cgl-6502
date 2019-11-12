@@ -67,7 +67,7 @@ buffer: .text "abcdefghij"
         .text "yzabcdefgh"
         .text "zabcdefghi"
 
-buff_2: .text "abcdefghij"
+buff_2: .text "hellotoyou"
         .text "bcdefghijk"
         .text "cdefghijkl"
         .text "defghijklm"
