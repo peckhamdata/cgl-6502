@@ -56,6 +56,10 @@ test_double_buffer:
         lda buffer_pending_hi
         cmp #>buffer_1
         bne !fail+
+// And it should be showing as full
+        lda buffer_active_fill
+        cmp b1_x
+        bne !fail+
         lda #green
         jmp !exit+
 !fail:  lda #red
