@@ -32,4 +32,6 @@ double_buffer:
         sta buffer_pending_hi
         pla
         sta buffer_pending_lo
+        lda buffer_x
+        sta buffer_active_fill
 !exit:  rts
