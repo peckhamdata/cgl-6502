@@ -28,9 +28,27 @@ start:	ldx #$00
 		jsr screen_buffer
         jsr double_buffer
 		inx
-		cpx #$20
+		cpx #$40
+		bne !loop-
+		ldx #$00
+!loop:	lda (x0s),x
+		sta x0		
+		lda (x1s),x
+		sta x1		
+		lda (y0s),x
+		sta y0		
+		lda (y1s),x
+		sta y1		
+		jsr plot_line
+		inx
+		cpx #$05
 		bne !loop-
 		rts
+
+x0s:	.byte 1,1,1,1,38,1	
+x1s:	.byte 38,20,20,22,30,38
+y0s:	.byte 15,20,1,1,1,15
+y1s:	.byte 15,1,20,22,19,15
 
 .var buffer_length=27
 .var buffer_width=10
@@ -39,6 +57,8 @@ start:	ldx #$00
 .import source "screen_buffer.asm"
 .import source "region_left.asm"
 .import source "double_buffer.asm"
+.import source "plot_point.asm"
+.import source "line.asm"
 
 buffer: .text "abcdefghij"
         .text "bcdefghijk"

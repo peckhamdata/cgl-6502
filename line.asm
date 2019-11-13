@@ -15,59 +15,63 @@ y_step:     .byte $00
 xtmp:       .byte $00
 
 * = $400B
-init_line:   clc
-             lda x1
-             sec
-             sbc x0
-             bpl !next+
-             eor #$ff
-             clc
-             adc #$01
-!next:       sta xtmp
-             lda y1
-             sec
-             sbc y0
-             bpl !next+
-             eor #$ff
-             clc
-             adc #$01
-!next:       cmp xtmp
-             beq !swap+
-             bcs !swap+
-             jmp !next+          
-!swap:       lda #$01
-             sta steep
-             lda y0
-             pha
-             lda x0
-             sta y0
-             pla
-             sta x0
+plot_line:  txa
+            pha
+            tya
+            pha
+            clc
+            lda x1
+            sec
+            sbc x0
+            bpl !next+
+            eor #$ff
+            clc
+            adc #$01
+!next:      sta xtmp
+            lda y1
+            sec
+            sbc y0
+            bpl !next+
+            eor #$ff
+            clc
+            adc #$01
+!next:      cmp xtmp
+            beq !swap+
+            bcs !swap+
+            jmp !next+          
+!swap:      lda #$01
+            sta steep
+            lda y0
+            pha
+            lda x0
+            sta y0
+            pla
+            sta x0
 
-             lda y1
-             pha
-             lda x1
-             sta y1
-             pla
-             sta x1
-!next:       lda x0
-             cmp x1
-             beq !cont+
-             bcs !cont+
-             jmp !next+
-!cont:       lda x0
-             pha
-             lda x1
-             sta x0
-             pla
-             sta x1
+            lda y1
+            pha
+            lda x1
+            sta y1
+            pla
+            sta x1
+!next:      lda x0
+            cmp x1
+            beq !cont+
+            bcs !cont+
+            jmp !next+
+!cont:      lda x0
+            pha
+            lda x1
+            sta x0
+            pla
+            sta x1
 
-             lda y0
-             pha
-             lda y1
-             sta y0
-             pla
-             sta y1
+            lda y0
+            pha
+            lda y1
+            sta y0
+            pla
+            sta y1
 !next:      sec    
             lda x1
             sbc x0
@@ -92,8 +96,7 @@ init_line:   clc
             jmp !next+
 !else:      lda #$01
             sta y_step      
-!next:      rts
-plot_line:  clc
+!next:      clc
 !next:      ldx x0
 !loop:      
             lda steep
@@ -125,5 +128,11 @@ plot_line:  clc
 !next:      inx
             cpx x1
             bne !loop-
+            pla
+            tay
+            pla
+            tax
+            lda #$00
+            sta steep
             rts
 
