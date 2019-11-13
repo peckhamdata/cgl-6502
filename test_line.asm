@@ -1,28 +1,67 @@
-test_init_line: nop
 
 // Given:
 
-// steep = False
-// x0 = 10
-// y0 = 15
-// x1 = 1
-// y1 = 2
+test_plot_line: lda #$00
+                sta steep
+                lda #$0a
+                sta x0
+                lda #$0e
+                sta y0
+                lda #$01
+                sta x1
+                lda #$02
+                sta y1
 
 // When we initialise a line
 
+                jsr init_line
+                lda steep
+                cmp expected_steep
+                bne !fail+
+                lda x0
+                cmp expected_x0
+                bne !fail+
+                lda y0
+                cmp expected_y0
+                bne !fail+
+                lda x1
+                cmp expected_x1
+                bne !fail+
+                lda y1
+                cmp expected_y1
+                bne !fail+
+                lda delta_x
+                cmp expected_delta_x
+                bne !fail+
+                lda delta_y
+                cmp expected_delta_y
+                bne !fail+
+                lda error
+                cmp expected_error
+                bne !fail+
+                lda y_step
+                cmp expected_y_step
+                bne !fail+
+                lda #green
+                jmp !exit+
+
+!fail:          lda #red
+!exit:          sta $d020
+                rts
+
 // Then we should get:
 
-expected_steep: .byte 1
-expected_x0: .byte 2
-expected_y0: .byte 1
-expected_y1: .byte 10
-expected_x1: .byte 15
-expected_delta_x: .byte 13
+expected_steep: .byte $01
+expected_x0: .byte $02
+expected_y0: .byte $01
+expected_y1: .byte $0a
+expected_x1: .byte $0e
+expected_delta_x: .byte $0c // d
 expected_delta_y: .byte 9
 expected_error: .byte 6 // .5 (!)
 expected_y_step: .byte 1
 
-test_plot_line: clc
+                clc
 
                 lda #<actual_line_buffer
                 sta plot_buffer_lo

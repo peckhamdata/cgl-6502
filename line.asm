@@ -1,9 +1,10 @@
+* = $4000
 steep:      .byte $00
 
 x0:         .byte $01
 y0:         .byte $02
 x1:         .byte $0a
-y1:         .byte $0f
+y1:         .byte $0e
 
 delta_x:    .byte $00
 delta_y:    .byte $00
@@ -13,84 +14,86 @@ y_step:     .byte $00
 
 xtmp:       .byte $00
 
-// plot_line:   lda x1
-//          sec
-//          sbc x0
-//          sta xtmp
+* = $400B
+init_line:   clc
+             lda x1
+             sec
+             sbc x0
+             bpl !next+
+             eor #$ff
+             clc
+             adc #$01
+!next:       sta xtmp
+             lda y1
+             sec
+             sbc y0
+             bpl !next+
+             eor #$ff
+             clc
+             adc #$01
+!next:       cmp xtmp
+             beq !swap+
+             bcs !swap+
+             jmp !next+          
+!swap:       lda #$01
+             sta steep
+             lda y0
+             pha
+             lda x0
+             sta y0
+             pla
+             sta x0
 
-//          lda y1
-//          sec
-//          sbc y0
-//          clc
+             lda y1
+             pha
+             lda x1
+             sta y1
+             pla
+             sta x1
+!next:       lda x0
+             cmp x1
+             beq !cont+
+             bcs !cont+
+             jmp !next+
+!cont:       lda x0
+             pha
+             lda x1
+             sta x0
+             pla
+             sta x1
 
-//          cmp tmp
-//          beq !gt+
-//          jmp !next+
-// !gt:     bcs !swap+
-//          jmp !next+          
-// !swap:       lda #$01
-//          sta steep
-//          lda y0
-//          pha
-//          lda x0
-//          sta y0
-//          pla
-//          sta x0
-
-//          lda y1
-//          pha
-//          lda x1
-//          sta y1
-//          pla
-//          sta x1
-
+             lda y0
+             pha
+             lda y1
+             sta y0
+             pla
+             sta y1
+!next:      sec    
+            lda x1
+            sbc x0
+            sta delta_x
+            sec
+            lda y1
+            sbc y0
+            bpl !next+
+            eor #$ff
+            clc
+            adc #$01
+!next:      sta delta_y
+            lda delta_x
+            lsr
+            sta error
+            lda y0
+            sta y
+            cmp y1
+            bcc !else+
+            lda #$ff
+            sta y_step
+            jmp !next+
+!else:      lda #$01
+            sta y_step      
+!next:      rts
 plot_line:  clc
-//          lda x0
-//          cmp x1
-//          beq !gt+
-//          jmp !next+
-// !gt:     bcs !swap+
-//          jmp !next+
-// !swap:       lda x1
-//          pha
-//          lda x0
-//          sta x1
-//          pla
-//          sta x0
-
-//          lda y1
-//          pha
-//          lda y0
-//          sta y1
-//          pla
-//          sta y0
-
-// !next:       lda x1
-//          sec
-//          sbc x0
-//          sta delta_x
-//          lda y1
-//          sec
-//          sbc y0
-//          sta delta_y
-
-//          lda delta_x
-//          lsr
-//          sta error
-//          lda y0
-//          sta y
-//          lda #$00
-//          sta y_step
-
-//          lda y0
-//          clc
-//          cmp y1
-//          beq !lt+
-//          jmp !next+
-// !lt:     bcs !lt+
-//          jmp !next+
-// !lt:     lda #$01
-//          sta y_step
 !next:      ldx x0
 !loop:      
             lda steep
