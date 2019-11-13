@@ -3,12 +3,11 @@ num2:               .byte $0
 
 p0:                 .byte $0
 p1:                 .byte $0
-plot_headless:      .byte $0
-plot_headless_x_lo: .byte $0
-plot_headless_x_hi: .byte $0
 
-plot_headless_y_lo: .byte $0
-plot_headless_y_hi: .byte $0
+plot_buffer_lo:     .byte $00
+plot_buffer_hi:     .byte $04
+plot_buffer_x:      .byte $28
+plot_buffer_y:      .byte $18
 
 plot_point: 
             txa
@@ -16,40 +15,17 @@ plot_point:
             tya
             pha
 
-            lda plot_headless
-            beq head
-            lda plot_headless_x_lo
-            sta $02
-            lda plot_headless_x_hi
-            sta $03
-            ldy #$00
+            clc
             lda p0
-            sta ($02),y
-            inc plot_headless_x_lo
-            bcc !next+
-            inc plot_headless_x_hi
-!next:      lda plot_headless_y_lo
-            sta $02
-            lda plot_headless_y_hi
-            sta $03
-            ldy #$00
-            lda p1
-            sta ($02),y
-            inc plot_headless_y_lo
-            bcc !next+
-            inc plot_headless_y_hi
-!next:      jmp !exit+
-head:       clc
-            lda p0
-            cmp #$28
+            cmp plot_buffer_x
             bcs !exit+
 
             clc
             lda p1
-            cmp #$18    
+            cmp plot_buffer_y    
             bcs !exit+
 
-            lda #$28
+            lda plot_buffer_x
             sta num2
 
 //------------------------
@@ -78,20 +54,23 @@ doAdd:      clc
             tay
             txa
 
-            !loop:
+!loop:
             asl p1
             rol num1Hi
 enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
             lsr num2
             bcs doAdd
             bne !loop-
-
-            sta $02
             tya
-            adc #$04
+            adc plot_buffer_hi
             sta $03
-
-            ldy p0
+            clc
+            txa
+            adc plot_buffer_lo
+            sta $02
+            bcc !next+
+            inc $03
+!next:      ldy p0
             lda #$3a
             sta ($02),y
 
