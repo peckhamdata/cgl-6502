@@ -1,4 +1,3 @@
-* = $4000
 steep:      .byte $00
 
 x0:         .byte $01
@@ -14,8 +13,52 @@ y_step:     .byte $00
 
 xtmp:       .byte $00
 
-* = $400B
 plot_line:  txa
+            pha
+            tya
+            pha
+            lda y0
+            sta y0
+            clc
+            ldx x0
+!loop:      lda steep
+            cmp #$01
+            bne !next+
+            lda y            // Plot y,x
+            sta p0
+            stx p1
+            jsr plot_point
+            jmp !done+
+!next:      stx p0           // Plot x,y
+            lda y
+            sta p1
+            jsr plot_point
+!done:      sec
+            lda error
+            sbc delta_y
+            sta error
+            bmi !lt+
+            jmp !next+
+!lt:        lda y
+            clc
+            adc y_step
+            sta y
+            lda error
+            clc
+            adc delta_x
+            sta error
+!next:      inx
+            cpx x1
+            bne !loop-
+            pla
+            tay
+            pla
+            tax
+            lda #$00
+            sta steep
+            rts
+
+init_line:  txa
             pha
             tya
             pha
@@ -96,43 +139,10 @@ plot_line:  txa
             jmp !next+
 !else:      lda #$01
             sta y_step      
-!next:      clc
-!next:      ldx x0
-!loop:      
-            lda steep
-            cmp #$01
-            bne !next+
-            lda y            // Plot y,x
-            sta p0
-            stx p1
-            jsr plot_point
-            jmp !done+
-!next:      stx p0           // Plot x,y
-            lda y
-            sta p1
-            jsr plot_point
-!done:      sec
-            lda error
-            sbc delta_y
-            sta error
-            bcs !lt+
-            jmp !next+
-!lt:        lda y
-            clc
-            adc y_step
-            sta y
-            lda error
-            clc
-            adc delta_x
-            sta error
-!next:      inx
-            cpx x1
-            bne !loop-
-            pla
+!next:      pla
             tay
             pla
             tax
-            lda #$00
-            sta steep
             rts
+
 

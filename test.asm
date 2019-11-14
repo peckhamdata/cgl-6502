@@ -2,10 +2,11 @@
 :BasicUpstart2(start)
 
 start:
-        jsr test_screen_left
-        jsr test_screen_buffer
-        jsr test_double_buffer
-        jsr test_plot_point
+        // jsr test_screen_left
+        // jsr test_screen_buffer
+        // jsr test_double_buffer
+        // jsr test_plot_point
+        // jsr test_init_line
         jsr test_plot_line
         rts
 

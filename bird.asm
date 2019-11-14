@@ -19,17 +19,17 @@ start:	ldx #$00
 		sta buffer_active_fill
         lda #$19
         sta buffer_y
-!loop:	
-        lda buffer_active_lo
-        sta buffer_lo
-        lda buffer_active_hi
-        sta buffer_hi
-		jsr screen_left
-		jsr screen_buffer
-        jsr double_buffer
-		inx
-		cpx #$40
-		bne !loop-
+// !loop:	
+//         lda buffer_active_lo
+//         sta buffer_lo
+//         lda buffer_active_hi
+//         sta buffer_hi
+// 		jsr screen_left
+// 		jsr screen_buffer
+//         jsr double_buffer
+// 		inx
+// 		cpx #$40
+// 		bne !loop-
 		ldx #$00
 !loop:	lda (x0s),x
 		sta x0		
@@ -38,17 +38,19 @@ start:	ldx #$00
 		lda (y0s),x
 		sta y0		
 		lda (y1s),x
-		sta y1		
+		sta y1
+		jsr init_line		
 		jsr plot_line
 		inx
-		cpx #$05
+		cpx #$06	
 		bne !loop-
 		rts
 
-x0s:	.byte 1,1,1,1,38,1	
-x1s:	.byte 38,20,20,22,30,38
-y0s:	.byte 15,20,1,1,1,15
-y1s:	.byte 15,1,20,22,19,15
+x0s:	.byte 01, 01, 00, 20, 08, 22	
+y0s:	.byte 25, 01, 13, 00, 10, 39
+
+x1s:	.byte 38, 38, 40, 20, 40, 25
+y1s:	.byte 01, 25, 13, 25, 19, 01
 
 .var buffer_length=27
 .var buffer_width=10
