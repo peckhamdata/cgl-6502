@@ -7,7 +7,8 @@ start:
         // jsr test_double_buffer
         // jsr test_plot_point
         // jsr test_init_line
-        jsr test_plot_line
+        // jsr test_plot_line
+        jsr test_copy_mem
         rts
 
 .import source "vars.asm"
@@ -23,3 +24,5 @@ start:
 .import source "plot_point.asm"
 .import source "line.asm"
 .import source "test_line.asm"
+.import source "copy_mem.asm"
+.import source "test_copy_mem.asm"

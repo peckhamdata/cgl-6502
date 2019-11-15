@@ -4,7 +4,26 @@
 
 :BasicUpstart2(start)
 
-start:	ldx #$00
+start:	
+				lda #<map
+                sta copy_mem_source_lo
+                lda #>map
+                sta copy_mem_source_hi
+
+                lda #$00
+                sta copy_mem_dest_lo
+                lda #$04
+                sta copy_mem_dest_hi
+
+                lda #$00
+                sta copy_mem_dest_length_lo
+                lda #$04    
+                sta copy_mem_dest_length_hi
+
+                jsr copy_mem
+		
+
+		ldx #$00
         lda #<buffer
         sta buffer_active_lo
         lda #>buffer
@@ -40,7 +59,7 @@ start:	ldx #$00
 		lda (y1s),x
 		sta y1
 		jsr init_line		
-		jsr plot_line
+		// jsr plot_line
 		inx
 		cpx #$06	
 		bne !loop-
@@ -61,6 +80,7 @@ y1s:	.byte 01, 25, 13, 25, 19, 01
 .import source "double_buffer.asm"
 .import source "plot_point.asm"
 .import source "line.asm"
+.import source "copy_mem.asm"
 
 buffer: .text "abcdefghij"
         .text "bcdefghijk"
@@ -115,3 +135,34 @@ buff_2: .text "hellotoyou"
         .text "xyzabcdefg"
         .text "yzabcdefgh"
         .text "zabcdefghi"
+
+// map:
+//	   0123456789012345678901234567890123456789	
+.text "                                        "
+.text "  ,__                                _, "
+.text " \~|  ~--__    ,                     |\."
+.text "  |    /|  ~~|~| ~--,               _/>."
+.text " /-_--_||    |  \   / ~\~~/       /~|,' "
+.text " |     /\    |--| {    / /~)  _-  ',\,  "
+.text "/     |  |~~~|  \  \   | | '~\|___,|'   "
+.text "|~--__|  |   |_ |~~~|--| |__ /_  {,~    "
+.text "|  |  ~|~|   | ~\   /  `-' |`~|__{/.    "
+.text "|  |   | '---,   \--|   |  | ,'~/\,|`   "   
+.text "', \   |   | |~~~~|  \  | ,'~~\/  |     "
+.text " |  \  |   | |    |   \_-~   /`~__-     "
+.text " ',  \,---|-+----'___/__--~~/     /     "
+.text "  '_  \|  | |~|    |  |    _/-,-,/      "
+.text "    \  |  | | |_   |  /~~|~\   \/       "
+.text "     ~-'  | |   `~~\_|   |  |  /        "
+.text "       '- |_|       |/   |,-'-~\        "
+.text "         ` \        |`--,~~~-~, \       "
+.text "            \/~\   /~`---`     | \      "  
+.text "                \ /             \ |     "  
+.text "                 \|              ~'     "  
+.text "                  `                     "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+
+map:
+.import binary "cbm-map.txt"

@@ -59,5 +59,5 @@ pass:   lda #green
 fail:   lda #red
 report: sta $d020
         rts
-original: .text "thequickbrownfoxjumpedoverthelazydog1234"
-expected: .text "hequickbrownfoxjumpedoverthelazydog1234 "
+original: .text "thequickbrownfoxjumpsoverthelazydog12345"
+expected: .text "hequickbrownfoxjumpsoverthelazydog12345 "

@@ -52,15 +52,15 @@ test_init_line: lda #$00
 !exit:          sta $d020
                 rts
 
-expected_steep: .byte $01, $01
-expected_x0: .byte $01, $02
-expected_y0: .byte $0f, $01
-expected_y1: .byte $0f, $0a
-expected_x1: .byte $26, $0e
-expected_delta_x: .byte $25, $0c // d
-expected_delta_y: .byte $00, $09
-expected_error: .byte $12, $06 // .5 (!)
-expected_y_step: .byte $ff, $01
+expected_steep: .byte $01
+expected_x0: .byte $02
+expected_y0: .byte $01
+expected_y1: .byte $0a
+expected_x1: .byte $0e
+expected_delta_x: .byte $0c // d
+expected_delta_y: .byte $09
+expected_error: .byte $06 // .5 (!)
+expected_y_step: .byte $01
 
 test_plot_line: clc
                 lda #$00 // #<actual_line_buffer
