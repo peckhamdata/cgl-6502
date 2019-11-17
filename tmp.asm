@@ -2,6 +2,14 @@
 
 :BasicUpstart2(start)
 * = $3000
+pts_x:                  .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+
+pts_x_lo:               .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+pts_x_hi:               .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+pts_y_lo:               .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+pts_y_hi:               .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
 a_lo:                   .byte $00
 a_hi:                   .byte $00
 
@@ -35,28 +43,38 @@ n_seg_hi:               .byte $00
 
 i:                      .byte $01       
 
-pts_x:                  .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-pts_y:                  .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-
 p1_x:                   .byte $08
-p2_x:                   .byte $00
-p3_x:                   .byte $00
+p2_x:                   .byte $0d
+p3_x:                   .byte $02
 
-p1_y:                   .byte $00
-p2_y:                   .byte $00
-p3_y:                   .byte $00
+p1_y:                   .byte $02
+p2_y:                   .byte $08
+p3_y:                   .byte $0f
 
 * = $3100
+foo:
+                // divide result by 10 to get plot co-ords
+                ldx #$03
+                lda pts_x_lo,x
+                sta num1
+                lda pts_x_hi,x
+                sta num1Hi
+                lda #$10
+                sta num2
+                lda #$00
+                sta num2+1
+                jsr divide
+                sta pts_x,x
+                rts
+
 start:          
                 // For i = 0 To n_seg
-                lda #$03
-                sta i
+                ldx #$00
 
                 //   t = i / n_seg
-                lda #$00
+!loop:          lda #$00
                 sta dividend+1
-                lda i
-                sta dividend
+                stx dividend
 
                 lda n_seg_lo
                 sta divisor
@@ -116,20 +134,94 @@ start:
                 jsr multiply
                 sta c_lo
                 sty c_hi
-
+                // X
                 lda a_lo
                 sta num1
-                ldy p1_x
+                lda p1_x
+                sta num2
+                lda #$00
+                sta num1Hi
+                sta num2+1
                 jsr multiply
+                sta pts_x_lo,x
                 tya
-                sta pts_x,x
+                sta pts_x_hi,x
 
+                lda b_lo
+                sta num1
+                lda p2_x
+                sta num2
+                lda #$00
+                sta num1Hi
+                sta num2+1
+                jsr multiply
+                adc pts_x_lo,x
+                sta pts_x_lo,x
+                tya
+                adc pts_x_hi,x
+                sta pts_x_hi,x
 
-                rts
+                lda c_lo
+                sta num1
+                lda p3_x
+                sta num2
+                lda #$00
+                sta num1Hi
+                sta num2+1
+                jsr multiply
+                adc pts_x_lo,x
+                sta pts_x_lo,x
+                tya
+                adc pts_x_hi,x
+                sta pts_x_hi,x
+                // Y
+                lda a_lo
+                sta num1
+                lda p1_y
+                sta num2
+                lda #$00
+                sta num1Hi
+                sta num2+1
+                jsr multiply
+                adc pts_y_lo,x
+                sta pts_y_lo,x
+                tya
+                adc pts_y_hi,x
+                sta pts_y_hi,x
 
-  //  pts(i)\x = a * p1x + b * p2x + c * p3x
-  //  pts(i)\y = a * p1y + b * p2y + c * p3y
-  // Next
+                lda b_lo
+                sta num1
+                lda p2_y
+                sta num2
+                lda #$00
+                sta num1Hi
+                sta num2+1
+                jsr multiply
+                adc pts_y_lo,x
+                sta pts_y_lo,x
+                tya
+                adc pts_y_hi,x
+                sta pts_y_hi,x
+
+                lda c_lo
+                sta num1
+                lda p3_y
+                sta num2
+                lda #$00
+                sta num1Hi
+                sta num2+1
+                jsr multiply
+                adc pts_y_lo,x
+                sta pts_y_lo,x
+                tya
+                adc pts_y_hi,x
+                sta pts_y_lo,x
+                inx
+                cpx n_seg_lo
+                beq !done+
+                jmp !loop-
+!done:          jmp foo
+
 
 
 // divison spike - https://codebase64.org/doku.php?id=base:16bit_division_16-bit_result
@@ -179,8 +271,7 @@ skip:           dex
 // ; In this version, both inputs must be unsigned
 // ; Remove the noted line to turn this into a 16bit(either) * 8bit(unsigned) = 16bit multiply.
 
-multiply:        txa
-                 pha
+multiply:        
                  lda #$00
                  tay
                  sty num1Hi  // remove this line for 16*8=16bit multiply
@@ -189,12 +280,12 @@ multiply:        txa
 doAdd:
                  clc
                  adc num1
-                 tax
+                 pha
 
                  tya
                  adc num1Hi
                  tay
-                 txa
+                 pla
 
 loop:
                  asl num1
@@ -203,6 +294,4 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
                  lsr num2
                  bcs doAdd
                  bne loop
-                 pla
-                 tax
                  rts
