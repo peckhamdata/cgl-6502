@@ -3,7 +3,16 @@
 :BasicUpstart2(start)
 * = $3000
 pts_x:                  .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+pts_y:                  .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
+divisor:                .byte $00       
+                        .byte $00       
+dividend:               .byte $00       
+                        .byte $00
+remainder:              .byte $00       
+                        .byte $00
+result:                 .byte $00       
+                        .byte $00
 
 pts_x_lo:               .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 pts_x_hi:               .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -25,14 +34,6 @@ t1_hi:                  .byte $00
 t_lo:                   .byte $00       
 t_hi:                   .byte $00       
 
-divisor:                .byte $00       
-                        .byte $00       
-dividend:               .byte $00       
-                        .byte $00
-remainder:              .byte $00       
-                        .byte $00
-result:                 .byte $00       
-                        .byte $00
 num1:                   .byte $00
 num1Hi:                 .byte $00
 num2:                   .byte $00
@@ -52,23 +53,7 @@ p2_y:                   .byte $08
 p3_y:                   .byte $0f
 
 * = $3100
-foo:
-                // divide result by 10 to get plot co-ords
-                ldx #$03
-                lda pts_x_lo,x
-                sta num1
-                lda pts_x_hi,x
-                sta num1Hi
-                lda #$10
-                sta num2
-                lda #$00
-                sta num2+1
-                jsr divide
-                sta pts_x,x
-                rts
-
-start:          
-                // For i = 0 To n_seg
+start:          // For i = 0 To n_seg
                 ldx #$00
 
                 //   t = i / n_seg
@@ -215,13 +200,64 @@ start:
                 sta pts_y_lo,x
                 tya
                 adc pts_y_hi,x
-                sta pts_y_lo,x
+                sta pts_y_hi,x
+
+                // shift result right to get plot co-ords
+
+                lda pts_x_lo,x
+                sta dividend
+                lda pts_x_hi,x
+                sta dividend+1
+                lda #$64
+                sta divisor
+                lda #$00
+                sta divisor+1
+                jsr div16
+                lda dividend
+                sta pts_x,x
+
+                lda pts_y_lo,x
+                sta dividend
+                lda pts_y_hi,x
+                sta dividend+1
+                lda #$64
+                sta divisor
+                lda #$00
+                sta divisor+1
+                jsr div16
+                lda dividend
+                sta pts_y,x
+
                 inx
                 cpx n_seg_lo
                 beq !done+
                 jmp !loop-
-!done:          jmp foo
+!done:          rts
 
+// http://forums.nesdev.com/viewtopic.php?t=143
+// ;;; div16
+// ;   Given a 16-bit number in dividend, divides it by divisor and
+// ;   stores the result in dividend.
+// ;   out: A: remainder; X: 0; Y: unchanged
+div16:
+                txa
+                pha
+                ldx #16
+                lda #0
+!divloop:
+                asl dividend
+                rol dividend+1
+                rol
+                cmp divisor
+                bcc no_sub
+                sbc divisor
+                inc dividend
+no_sub:
+                dex
+                bne !divloop-
+                pla
+                tax
+                rts
 
 
 // divison spike - https://codebase64.org/doku.php?id=base:16bit_division_16-bit_result
@@ -235,7 +271,7 @@ divide:         txa
                 sta remainder+1
                 ldx #16         // repeat for each bit: ...
 
-divloop:        asl dividend    // dividend lb & hb*2, msb -> Carry
+!divloop:       asl dividend    // dividend lb & hb*2, msb -> Carry
                 rol dividend+1  
                 rol remainder   // remainder lb & hb * 2 + msb from carry
                 rol remainder+1
@@ -252,7 +288,7 @@ divloop:        asl dividend    // dividend lb & hb*2, msb -> Carry
                 inc result      // and INCrement result cause divisor fit in 1 times
 
 skip:           dex
-                bne divloop
+                bne !divloop-
                 pla
                 tax     
                 rts
