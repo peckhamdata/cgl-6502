@@ -49,20 +49,22 @@ start:
 // 		inx
 // 		cpx #$40
 // 		bne !loop-
-		ldx #$00
-!loop:	lda (x0s),x
-		sta x0		
-		lda (x1s),x
-		sta x1		
-		lda (y0s),x
-		sta y0		
-		lda (y1s),x
-		sta y1
-		jsr init_line		
-		// jsr plot_line
-		inx
-		cpx #$06	
-		bne !loop-
+// 		ldx #$00
+// !loop:	lda (x0s),x
+// 		sta x0		
+// 		lda (x1s),x
+// 		sta x1		
+// 		lda (y0s),x
+// 		sta y0		
+// 		lda (y1s),x
+// 		sta y1
+// 		jsr init_line		
+// 		// jsr plot_line
+// 		inx
+// 		cpx #$06	
+// 		bne !loop-
+		jsr bang
+		jsr expl
 		rts
 
 x0s:	.byte 01, 01, 00, 20, 08, 22	
@@ -81,6 +83,8 @@ y1s:	.byte 01, 25, 13, 25, 19, 01
 .import source "plot_point.asm"
 .import source "line.asm"
 .import source "copy_mem.asm"
+.import source "tmp.asm"
+.import source "circ.asm"
 
 buffer: .text "abcdefghij"
         .text "bcdefghijk"
@@ -135,34 +139,6 @@ buff_2: .text "hellotoyou"
         .text "xyzabcdefg"
         .text "yzabcdefgh"
         .text "zabcdefghi"
-
-// map:
-//	   0123456789012345678901234567890123456789	
-.text "                                        "
-.text "  ,__                                _, "
-.text " \~|  ~--__    ,                     |\."
-.text "  |    /|  ~~|~| ~--,               _/>."
-.text " /-_--_||    |  \   / ~\~~/       /~|,' "
-.text " |     /\    |--| {    / /~)  _-  ',\,  "
-.text "/     |  |~~~|  \  \   | | '~\|___,|'   "
-.text "|~--__|  |   |_ |~~~|--| |__ /_  {,~    "
-.text "|  |  ~|~|   | ~\   /  `-' |`~|__{/.    "
-.text "|  |   | '---,   \--|   |  | ,'~/\,|`   "   
-.text "', \   |   | |~~~~|  \  | ,'~~\/  |     "
-.text " |  \  |   | |    |   \_-~   /`~__-     "
-.text " ',  \,---|-+----'___/__--~~/     /     "
-.text "  '_  \|  | |~|    |  |    _/-,-,/      "
-.text "    \  |  | | |_   |  /~~|~\   \/       "
-.text "     ~-'  | |   `~~\_|   |  |  /        "
-.text "       '- |_|       |/   |,-'-~\        "
-.text "         ` \        |`--,~~~-~, \       "
-.text "            \/~\   /~`---`     | \      "  
-.text "                \ /             \ |     "  
-.text "                 \|              ~'     "  
-.text "                  `                     "
-.text "                                        "
-.text "                                        "
-.text "                                        "
 
 map:
 .import binary "cbm-map.txt"

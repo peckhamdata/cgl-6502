@@ -10,13 +10,14 @@ b'_': bytes.fromhex('45'),
 b'-': bytes.fromhex('44'),
 }
 
-with open("out.seq", "rb") as f:
+with open("usa-map.seq", "rb") as f:
     byte = f.read(1)
     while byte != b"":
         print(byte)
-        # Do stuff with byte.
         if byte in replacements.keys():
             output.write(replacements[byte])
+        elif byte == b'\r':
+        	pass
         else:
             output.write(byte)
         byte = f.read(1)

@@ -1,7 +1,6 @@
 
 
-:BasicUpstart2(start)
-* = $3000
+vars:
 pts_x:                  .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 pts_y:                  .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
@@ -34,9 +33,9 @@ t1_hi:                  .byte $00
 t_lo:                   .byte $00       
 t_hi:                   .byte $00       
 
-num1:                   .byte $00
-num1Hi:                 .byte $00
-num2:                   .byte $00
+// num1:                   .byte $00
+// num1Hi:                 .byte $00
+// num2:                   .byte $00
                         .byte $00
 
 n_seg_lo:               .byte $0a
@@ -44,16 +43,27 @@ n_seg_hi:               .byte $00
 
 i:                      .byte $01       
 
-p1_x:                   .byte $08
-p2_x:                   .byte $0d
-p3_x:                   .byte $02
+p1_x:                   .byte 1
+p2_x:                   .byte 15
+p3_x:                   .byte 35
 
-p1_y:                   .byte $02
-p2_y:                   .byte $08
-p3_y:                   .byte $0f
+p1_y:                   .byte 0
+p2_y:                   .byte 8
+p3_y:                   .byte 13
 
-* = $3100
-start:          // For i = 0 To n_seg
+bang:          // Blat everthing
+                ldx #$00
+                lda #$00
+!loop:          sta (vars),x
+                inx
+                cpx #$4e
+                bne !loop-
+
+                // For i = 0 To n_seg
+                lda #$00
+                sta $d020
+                sta $d021
+
                 ldx #$00
 
                 //   t = i / n_seg
@@ -232,7 +242,22 @@ start:          // For i = 0 To n_seg
                 cpx n_seg_lo
                 beq !done+
                 jmp !loop-
-!done:          rts
+!done:          
+                ldx #$00
+!loop:          lda (pts_x),x
+                sta x0          
+                lda (pts_x+1),x
+                sta x1          
+                lda (pts_y),x
+                sta y0          
+                lda (pts_y+1),x
+                sta y1
+                jsr init_line
+                jsr plot_line
+                inx
+                cpx #$09        
+                bne !loop-
+                rts
 
 // http://forums.nesdev.com/viewtopic.php?t=143
 // ;;; div16
@@ -265,7 +290,6 @@ no_sub:
 
 divide:         txa
                 pha
-                inc $d020
                 lda #$00          // preset remainder to 0
                 sta remainder
                 sta remainder+1
@@ -311,9 +335,9 @@ multiply:
                  lda #$00
                  tay
                  sty num1Hi  // remove this line for 16*8=16bit multiply
-                 beq enterLoop
+                 beq !enterLoop+
 
-doAdd:
+!doAdd:
                  clc
                  adc num1
                  pha
@@ -323,11 +347,15 @@ doAdd:
                  tay
                  pla
 
-loop:
+!loop:
                  asl num1
                  rol num1Hi
-enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
+!enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
                  lsr num2
-                 bcs doAdd
-                 bne loop
+                 bcs !doAdd-
+                 bne !loop-
                  rts
+
+// .import source "plot_point.asm"
+// .import source "line.asm"
+

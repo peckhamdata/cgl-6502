@@ -1,3 +1,4 @@
+num1:               .byte $0
 num1Hi:             .byte $0
 num2:               .byte $0
 
