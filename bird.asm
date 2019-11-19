@@ -5,9 +5,9 @@
 :BasicUpstart2(start)
 
 start:	
-				lda #<map
+				lda #<usa_map+2
                 sta copy_mem_source_lo
-                lda #>map
+                lda #>usa_map+2
                 sta copy_mem_source_hi
 
                 lda #$00
@@ -64,7 +64,7 @@ start:
 // 		cpx #$06	
 // 		bne !loop-
 		jsr bang
-		jsr expl
+		// jsr expl
 		rts
 
 x0s:	.byte 01, 01, 00, 20, 08, 22	
@@ -140,5 +140,4 @@ buff_2: .text "hellotoyou"
         .text "yzabcdefgh"
         .text "zabcdefghi"
 
-map:
-.import binary "cbm-map.txt"
+.import source "usa_map.asm"
