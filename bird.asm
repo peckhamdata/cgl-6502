@@ -5,9 +5,9 @@
 :BasicUpstart2(start)
 
 start:	
-				lda #<usa_map+2
+				lda #<ussr_map+2
                 sta copy_mem_source_lo
-                lda #>usa_map+2
+                lda #>ussr_map+2
                 sta copy_mem_source_hi
 
                 lda #$00
@@ -63,7 +63,7 @@ start:
 // 		inx
 // 		cpx #$06	
 // 		bne !loop-
-		jsr bang
+		// jsr bang
 		// jsr expl
 		rts
 
@@ -140,4 +140,4 @@ buff_2: .text "hellotoyou"
         .text "yzabcdefgh"
         .text "zabcdefghi"
 
-.import source "usa_map.asm"
+.import source "maps.asm"
