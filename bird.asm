@@ -5,9 +5,9 @@
 :BasicUpstart2(start)
 
 start:	
-				lda #<ussr_map+2
+				lda #<usa_map+2
                 sta copy_mem_source_lo
-                lda #>ussr_map+2
+                lda #>usa_map+2
                 sta copy_mem_source_hi
 
                 lda #$00
@@ -63,7 +63,7 @@ start:
 // 		inx
 // 		cpx #$06	
 // 		bne !loop-
-		// jsr bang
+		jsr bang
 		// jsr expl
 		rts
 

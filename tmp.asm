@@ -51,6 +51,8 @@ p1_y:                   .byte 0
 p2_y:                   .byte 8
 p3_y:                   .byte 13
 
+*=$3000
+
 bang:          // Blat everthing
                 ldx #$00
                 lda #$00
@@ -255,7 +257,7 @@ bang:          // Blat everthing
                 jsr init_line
                 jsr plot_line
                 inx
-                cpx #$09        
+                cpx #$09       
                 bne !loop-
                 rts
 
