@@ -1,8 +1,4 @@
-test_curve: 
-
-            // test_set_t
-
-                //   t = i / n_seg
+test_curve:     // test_set_t: t = i / n_seg
                 lda #$03
                 sta curve_index
                 lda #$10
@@ -16,9 +12,31 @@ test_curve:
 !fail:          lda #red
 !result:        sta $d020
 
-            // test_set_t1
-
-            // test_set_a_b_c
+                // test_set_t1: t1 = 1.0 - t
+                jsr curve_set_t1
+                lda curve_t1
+                cmp #$07
+                bne !fail+
+                lda #green
+                jmp !result+
+!fail:          lda #red
+!result:        sta $d020
+                // test_set_a_b_c
+                jsr curve_set_a_b_c
+                lda curve_a
+                cmp #$31
+                bne !fail+
+                lda curve_b
+                cmp #$2a
+                bne !fail+
+                lda curve_c
+                cmp #$09
+                bne !fail+
+                lda #green
+                jmp !result+
+!fail:          lda #red
+!result:        sta $d020
+            
 
             // test_set_x_y
 

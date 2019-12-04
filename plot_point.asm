@@ -1,7 +1,3 @@
-num1:               .byte $0
-num1Hi:             .byte $0
-num2:               .byte $0
-
 p0:                 .byte $0
 p1:                 .byte $0
 
@@ -43,7 +39,7 @@ plot_point:
 
             lda #$00
             tay
-            sty num1Hi  // remove this line for 16*8=16bit multiply
+            sty num1+1  // remove this line for 16*8=16bit multiply
             beq enterLoop
 
 doAdd:      clc
@@ -51,13 +47,13 @@ doAdd:      clc
             tax
 
             tya
-            adc num1Hi
+            adc num1+1
             tay
             txa
 
 !loop:
             asl p1
-            rol num1Hi
+            rol num1+1
 enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
             lsr num2
             bcs doAdd
