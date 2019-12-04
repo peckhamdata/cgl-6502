@@ -21,7 +21,7 @@ expl:
 		sta f
 		jsr circ
 		inx
-		cpx #$ff
+		cpx #$5
 		bne !loop-
 		rts
 
