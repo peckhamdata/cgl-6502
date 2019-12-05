@@ -1,9 +1,8 @@
-test_curve:     // test_set_t: t = i / n_seg
-                lda #$03
-                sta curve_index
-                lda #$10
+    // test_set_t: t = i / n_seg
+                ldx #$03
+                lda #$0a
                 sta curve_num_segments
-                jsr curve_set_t
+                curve_set_t()
                 lda curve_t
                 cmp #$03        // Scaled integer for .3
                 bne !fail+
@@ -11,9 +10,8 @@ test_curve:     // test_set_t: t = i / n_seg
                 jmp !result+
 !fail:          lda #red
 !result:        sta $d020
-
                 // test_set_t1: t1 = 1.0 - t
-                jsr curve_set_t1
+                curve_set_t1()
                 lda curve_t1
                 cmp #$07
                 bne !fail+
@@ -22,7 +20,7 @@ test_curve:     // test_set_t: t = i / n_seg
 !fail:          lda #red
 !result:        sta $d020
                 // test_set_a_b_c
-                jsr curve_set_a_b_c
+                curve_set_a_b_c()
                 lda curve_a
                 cmp #$31
                 bne !fail+
@@ -38,7 +36,7 @@ test_curve:     // test_set_t: t = i / n_seg
 !result:        sta $d020
                 // test_set_x_y
                 ldx #$03
-                jsr curve_set_x_y
+                curve_set_x_y()
                 lda curve_pts_x_lo,x
                 cmp #$e2
                 bne !fail+
@@ -56,7 +54,7 @@ test_curve:     // test_set_t: t = i / n_seg
 !fail:          lda #red
 !result:        sta $d020
                 // test_shift_right
-                jsr curve_shift_right
+                curve_shift_right()
                 lda curve_pts_x,x
                 cmp #$09
                 bne !fail+
@@ -68,6 +66,60 @@ test_curve:     // test_set_t: t = i / n_seg
 !fail:          lda #red
 !result:        sta $d020
 
-            // test_plot_curve
+test_curve: 
+                // test_plot_curve
+                lda #$0a
+                sta curve_num_segments
+                curve_plot()
+                lda #<expected_curve_buffer
+                sta expected_plot_buffer_lo
+                lda #>expected_curve_buffer
+                sta expected_plot_buffer_hi
 
+                lda #<actual_curve_buffer
+                sta actual_plot_buffer_lo
+                lda #>actual_curve_buffer
+                sta actual_plot_buffer_hi
+                lda #$09
+                sta buffers_x
+                lda #$0e
+                sta buffers_y
+                jsr compare_buffers
+                lda cmp_res
+                bne !fail+
+                lda #green
+                jmp !result+
+    !fail:      lda #red
+    !result:    sta $d020
                 rts
+
+ expected_curve_buffer: .text "         "
+                        .text "         "
+                        .text " :       "
+                        .text " :       "
+                        .text "  :      "
+                        .text "  :      "
+                        .text "   :     "
+                        .text "    :    "
+                        .text "     :   "
+                        .text "     :   "
+                        .text "      :  "
+                        .text "       : "
+                        .text "        :"
+                        .text "        :"
+
+ actual_curve_buffer:   .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "
+                        .text "         "

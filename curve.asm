@@ -1,12 +1,3 @@
-* = $3000
-
-curve_pts_x:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_y:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-
-curve_pts_x_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_x_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_y_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_y_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 curve_p1_x:         .byte 1
 curve_p2_x:         .byte 15
@@ -16,9 +7,18 @@ curve_p1_y:         .byte 0
 curve_p2_y:         .byte 8
 curve_p3_y:         .byte 13
 
-curve_index:        .byte $00
-curve_num_segments: .byte $00
+curve_num_segments: .byte $09
                     .byte $00
+
+curve_vars:
+curve_pts_x:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+curve_pts_x_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_x_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
 curve_t:            .byte $00
                     .byte $00
 curve_t1:           .byte $00
@@ -31,10 +31,10 @@ curve_b:            .byte $00
 curve_c:            .byte $00
                     .byte $00
 
-curve_set_t:        lda #$00
+.macro curve_set_t() {        
+                    lda #$00
                     sta dividend+1
-                    lda curve_index
-                    sta dividend
+                    stx dividend
 
                     lda curve_num_segments
                     sta divisor
@@ -47,9 +47,10 @@ curve_set_t:        lda #$00
                     sta curve_t
                     lda remainder+1
                     sta curve_t+1
-                    rts
+}
 
-curve_set_t1:       sec
+.macro curve_set_t1() {
+                    sec
                     lda #$0a
                     sbc curve_t
                     sta curve_t1
@@ -57,9 +58,10 @@ curve_set_t1:       sec
                     lda #$00
                     sbc curve_t+1
                     sta curve_t1+1
-                    rts
+}
 
-curve_set_a_b_c:    //   a = Pow(t1, 2)
+.macro curve_set_a_b_c() {
+                    //   a = Pow(t1, 2)
                     // https://www.youtube.com/watch?v=EmsbsInpLHs
                     lda curve_t1
                     sta num1
@@ -96,9 +98,10 @@ curve_set_a_b_c:    //   a = Pow(t1, 2)
                     jsr multiply
                     sta curve_c
                     sty curve_c+1
-                    rts
+}
 
-curve_set_x_y:      // X
+.macro curve_set_x_y() {
+                    // X
                     lda curve_a
                     sta num1
                     lda curve_p1_x
@@ -180,9 +183,10 @@ curve_set_x_y:      // X
                     tya
                     adc curve_pts_y_hi,x
                     sta curve_pts_y_hi,x
-                    rts
+}
 
-curve_shift_right:  lda curve_pts_x_lo,x
+.macro curve_shift_right() {
+                    lda curve_pts_x_lo,x
                     sta dividend
                     lda curve_pts_x_hi,x
                     sta dividend+1
@@ -205,4 +209,43 @@ curve_shift_right:  lda curve_pts_x_lo,x
                     jsr div16
                     lda dividend
                     sta curve_pts_y,x
-                    rts
+}
+
+.macro curve_plot() {
+
+//                     ldx #$00
+//                     lda #$00
+// !loop:              sta (curve_vars),x
+//                     inx
+//                     cpx #$47
+//                     bne !loop-
+
+                    ldx #$00
+!loop:          
+                    curve_set_t()
+                    curve_set_t1()
+                    curve_set_a_b_c()
+                    curve_set_x_y()
+                    curve_shift_right()
+                    inx
+                    cpx curve_num_segments      
+                    beq !done+
+                    jmp !loop-
+!done:              ldx #$00
+!loop:  
+                    lda (curve_pts_x),x
+                    sta x0          
+                    lda (curve_pts_x+1),x
+                    sta x1          
+                    lda (curve_pts_y),x
+                    sta y0          
+                    lda (curve_pts_y+1),x
+                    sta y1
+                    jsr init_line
+                    jsr plot_line
+                    inx
+                    cpx #$09      
+                    beq !done+
+                    jmp !loop-
+!done:              
+}
