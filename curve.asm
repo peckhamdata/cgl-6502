@@ -1,16 +1,31 @@
 * = $3000
-curve_a:            .byte $00
-                    .byte $00
-curve_b:            .byte $00
-                    .byte $00
-curve_c:            .byte $00
-                    .byte $00
+
+curve_pts_x_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_x_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+curve_p1_x:         .byte 1
+curve_p2_x:         .byte 15
+curve_p3_x:         .byte 35
+
+curve_p1_y:         .byte 0
+curve_p2_y:         .byte 8
+curve_p3_y:         .byte 13
+
 curve_index:        .byte $00
 curve_num_segments: .byte $00
                     .byte $00
 curve_t:            .byte $00
                     .byte $00
 curve_t1:           .byte $00
+                    .byte $00
+
+curve_a:            .byte $00
+                    .byte $00
+curve_b:            .byte $00
+                    .byte $00
+curve_c:            .byte $00
                     .byte $00
 
 curve_set_t:        lda #$00
@@ -78,4 +93,88 @@ curve_set_a_b_c:    //   a = Pow(t1, 2)
                     jsr multiply
                     sta curve_c
                     sty curve_c+1
+                    rts
+
+curve_set_x_y:      // X
+                    lda curve_a
+                    sta num1
+                    lda curve_p1_x
+                    sta num2
+                    lda #$00
+                    sta num1+1
+                    sta num2+1
+                    jsr multiply
+                    sta curve_pts_x_lo,x
+                    tya
+                    sta curve_pts_x_hi,x
+
+                    lda curve_b
+                    sta num1
+                    lda curve_p2_x
+                    sta num2
+                    lda #$00
+                    sta num1+1
+                    sta num2+1
+                    jsr multiply
+                    adc curve_pts_x_lo,x
+                    sta curve_pts_x_lo,x
+                    tya
+                    adc curve_pts_x_hi,x
+                    sta curve_pts_x_hi,x
+
+                    lda curve_c
+                    sta num1
+                    lda curve_p3_x
+                    sta num2
+                    lda #$00
+                    sta num1+1
+                    sta num2+1
+                    jsr multiply
+                    adc curve_pts_x_lo,x
+                    sta curve_pts_x_lo,x
+                    tya
+                    adc curve_pts_x_hi,x
+                    sta curve_pts_x_hi,x
+                    // Y
+                    lda curve_a
+                    sta num1
+                    lda curve_p1_y
+                    sta num2
+                    lda #$00
+                    sta num1+1
+                    sta num2+1
+                    jsr multiply
+                    adc curve_pts_y_lo,x
+                    sta curve_pts_y_lo,x
+                    tya
+                    adc curve_pts_y_hi,x
+                    sta curve_pts_y_hi,x
+
+                    lda curve_b
+                    sta num1
+                    lda curve_p2_y
+                    sta num2
+                    lda #$00
+                    sta num1+1
+                    sta num2+1
+                    jsr multiply
+                    adc curve_pts_y_lo,x
+                    sta curve_pts_y_lo,x
+                    tya
+                    adc curve_pts_y_hi,x
+                    sta curve_pts_y_hi,x
+
+                    lda curve_c
+                    sta num1
+                    lda curve_p3_y
+                    sta num2
+                    lda #$00
+                    sta num1+1
+                    sta num2+1
+                    jsr multiply
+                    adc curve_pts_y_lo,x
+                    sta curve_pts_y_lo,x
+                    tya
+                    adc curve_pts_y_hi,x
+                    sta curve_pts_y_hi,x
                     rts
