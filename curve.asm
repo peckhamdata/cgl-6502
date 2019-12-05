@@ -211,14 +211,12 @@ curve_c:            .byte $00
                     sta curve_pts_y,x
 }
 
-.macro curve_plot() {
-
-//                     ldx #$00
-//                     lda #$00
-// !loop:              sta (curve_vars),x
-//                     inx
-//                     cpx #$47
-//                     bne !loop-
+curve_plot:         ldx #$00
+                    lda #$00
+!loop:              sta (curve_vars),x
+                    inx
+                    cpx #$47
+                    bne !loop-
 
                     ldx #$00
 !loop:          
@@ -248,5 +246,4 @@ curve_c:            .byte $00
                     cpx curve_num_segments      
                     beq !done+
                     jmp !loop-
-!done:              
-}
+!done:              rts

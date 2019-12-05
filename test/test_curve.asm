@@ -70,7 +70,17 @@ test_curve:
                 // test_plot_curve
                 lda #$0a
                 sta curve_num_segments
-                curve_plot()
+
+                lda #<actual_curve_buffer
+                sta plot_buffer_lo
+                lda #>actual_curve_buffer
+                sta plot_buffer_hi
+                lda #$1d
+                sta plot_buffer_x
+                lda #$0b
+                sta plot_buffer_y            
+
+                jsr curve_plot
                 lda #<expected_curve_buffer
                 sta expected_plot_buffer_lo
                 lda #>expected_curve_buffer
@@ -80,9 +90,9 @@ test_curve:
                 sta actual_plot_buffer_lo
                 lda #>actual_curve_buffer
                 sta actual_plot_buffer_hi
-                lda #$09
+                lda #$1d
                 sta buffers_x
-                lda #$0e
+                lda #$04
                 sta buffers_y
                 jsr compare_buffers
                 lda cmp_res
@@ -93,17 +103,22 @@ test_curve:
     !result:    sta $d020
                 rts
 
+*=$3000
+                               
  expected_curve_buffer: .text " ::                          "
                         .text "   :                         "
                         .text "    ::                       "
-                        .text "      ::::                   "
-                        .text "          ::                 "
+                        .text "      ::                     "
+                        .text "        ::::                 "
                         .text "            ::               "
                         .text "              ::             "
                         .text "                ::::         "
                         .text "                    ::::     "
                         .text "                        :::: "
                         .text "                            :"
+
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff
 
  actual_curve_buffer:   .text "                             "
                         .text "                             "
