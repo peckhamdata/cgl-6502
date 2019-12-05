@@ -7,12 +7,12 @@ PROG=bird
 .PHONY: deploy clean
 
 deploy:$(PROG).d64
-	x64 -autostart $(PROG).d64
+	x64 -autoload $(PROG).d64
 
 $(PROG).d64:$(PROG).prg
 	$(C1541) -format $(PROG),1 d64 $(PROG).d64 -attach $(PROG).d64 -write $(PROG).prg $(PROG)
 
-$(PROG).prg:$(PROG).asm *.asm 
+$(PROG).prg:$(PROG).asm *.asm test/*.asm
 	java -jar $(KICKASS_JAR) $(PROG).asm
 
 clean:

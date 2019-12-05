@@ -18,6 +18,31 @@ num1:           .byte $00
 num2:           .byte $00
                 .byte $00
 
+// http://forums.nesdev.com/viewtopic.php?t=143
+// ;;; div16
+// ;   Given a 16-bit number in dividend, divides it by divisor and
+// ;   stores the result in dividend.
+// ;   out: A: remainder; X: 0; Y: unchanged
+div16:
+                txa
+                pha
+                ldx #16
+                lda #0
+!loop:
+                asl dividend
+                rol dividend+1
+                rol
+                cmp divisor
+                bcc no_sub
+                sbc divisor
+                inc dividend
+no_sub:
+                dex
+                bne !loop-
+                pla
+                tax
+                rts
+
 divide:         txa
                 pha
                 lda #$00        // preset remainder to 0

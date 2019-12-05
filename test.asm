@@ -2,13 +2,14 @@
 :BasicUpstart2(start)
 
 start:
-        jsr test_screen_left
-        jsr test_screen_buffer
-        jsr test_double_buffer
-        jsr test_plot_point
-        jsr test_init_line
-        jsr test_plot_line
-        jsr test_copy_mem
+        // jsr test_screen_left
+        // jsr test_screen_buffer
+        // jsr test_double_buffer
+        // jsr test_plot_point
+        // jsr test_init_line
+        // jsr test_plot_line
+        // jsr test_copy_mem
+        jsr test_curve
         rts
 
 .import source "vars.asm"
@@ -26,3 +27,8 @@ start:
 .import source "test/test_line.asm"
 .import source "copy_mem.asm"
 .import source "test/test_copy_mem.asm"
+.import source "curve.asm"
+.import source "test/test_curve.asm"
+.import source "math.asm"
+
+// 1900 concurrent  

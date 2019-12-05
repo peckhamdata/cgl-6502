@@ -84,7 +84,7 @@ y1s:	.byte 01, 25, 13, 25, 19, 01
 .import source "line.asm"
 .import source "copy_mem.asm"
 .import source "tmp.asm"
-.import source "circ.asm"
+// .import source "circ.asm"
 
 buffer: .text "abcdefghij"
         .text "bcdefghijk"

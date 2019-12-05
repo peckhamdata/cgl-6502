@@ -228,10 +228,11 @@ curve_c:            .byte $00
                     curve_set_x_y()
                     curve_shift_right()
                     inx
-                    cpx curve_num_segments      
+                    cpx curve_num_segments 
                     beq !done+
                     jmp !loop-
 !done:              ldx #$00
+                    dec curve_num_segments     
 !loop:  
                     lda (curve_pts_x),x
                     sta x0          
@@ -244,7 +245,7 @@ curve_c:            .byte $00
                     jsr init_line
                     jsr plot_line
                     inx
-                    cpx #$09      
+                    cpx curve_num_segments      
                     beq !done+
                     jmp !loop-
 !done:              
