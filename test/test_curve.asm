@@ -103,8 +103,6 @@ test_curve:
     !result:    sta $d020
                 rts
 
-*=$3000
-                               
  expected_curve_buffer: .text " ::                          "
                         .text "   :                         "
                         .text "    ::                       "

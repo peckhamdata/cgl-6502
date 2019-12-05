@@ -110,3 +110,34 @@ multiply:
                  bcs !doAdd-
                  bne !loop-
                  rts
+
+// ; General 8bit * 8bit = 8bit multiply
+// ; by White Flame 20030207
+
+// ; Multiplies "num1" by "num2" and returns result in .A
+// ; Instead of using a bit counter, this routine early-exits when num2 reaches zero, thus saving iterations.
+
+
+// ; Input variables:
+// ;   num1 (multiplicand)
+// ;   num2 (multiplier), should be small for speed
+// ;   Signedness should not matter
+
+// ; .X and .Y are preserved
+// ; num1 and num2 get clobbered
+
+mult8:          lda #$00
+                beq !enter_loop+
+
+!do_add:        clc
+                adc num1
+
+!loop:          asl num1
+!enter_loop: // ;For an accumulating multiply (.A = .A + num1*num2), set up num1 and num2, then enter here
+                lsr num2
+                bcs !do_add-
+                bne !loop-
+
+end:            rts
+
+// ; 15 bytes

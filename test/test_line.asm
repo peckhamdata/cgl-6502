@@ -70,7 +70,7 @@ test_plot_line: clc
                 lda #$28 // #$09
                 sta plot_buffer_x
                 lda #$19 // #$0e
-                sta plot_buffer_y            
+                sta plot_buffer_y
 
                 // Given ^^^
 
