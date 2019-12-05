@@ -1,5 +1,8 @@
 * = $3000
 
+curve_pts_x:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
 curve_pts_x_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 curve_pts_x_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 curve_pts_y_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -177,4 +180,29 @@ curve_set_x_y:      // X
                     tya
                     adc curve_pts_y_hi,x
                     sta curve_pts_y_hi,x
+                    rts
+
+curve_shift_right:  lda curve_pts_x_lo,x
+                    sta dividend
+                    lda curve_pts_x_hi,x
+                    sta dividend+1
+                    lda #$64
+                    sta divisor
+                    lda #$00
+                    sta divisor+1
+                    jsr div16
+                    lda dividend
+                    sta curve_pts_x,x
+
+                    lda curve_pts_y_lo,x
+                    sta dividend
+                    lda curve_pts_y_hi,x
+                    sta dividend+1
+                    lda #$64
+                    sta divisor
+                    lda #$00
+                    sta divisor+1
+                    jsr div16
+                    lda dividend
+                    sta curve_pts_y,x
                     rts

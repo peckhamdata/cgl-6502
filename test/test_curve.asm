@@ -55,9 +55,18 @@ test_curve:     // test_set_t: t = i / n_seg
                 jmp !result+
 !fail:          lda #red
 !result:        sta $d020
-
-
-            // test_shift_right
+                // test_shift_right
+                jsr curve_shift_right
+                lda curve_pts_x,x
+                cmp #$09
+                bne !fail+
+                lda curve_pts_y,x
+                cmp #$04
+                bne !fail+
+                lda #green
+                jmp !result+
+!fail:          lda #red
+!result:        sta $d020
 
             // test_plot_curve
 
