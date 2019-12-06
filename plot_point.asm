@@ -5,11 +5,14 @@ plot_buffer_lo:     .byte $00
 plot_buffer_hi:     .byte $04
 plot_buffer_x:      .byte $28
 plot_buffer_y:      .byte $18
+plot_char:          .byte $3a
 
 plot_point: 
             txa
             pha
             tya
+            pha
+            lda p1
             pha
 
             clc
@@ -68,10 +71,12 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
             bcc !next+
             inc $03
 !next:      ldy p0
-            lda #$3a
+            lda plot_char
             sta ($02),y
 
 !exit:      pla
+            sta p1
+            pla
             tay
             pla
             tax
