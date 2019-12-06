@@ -1,8 +1,10 @@
 // Given an x/y position and some text
 
 message:    .byte $0f, $03
-            .text "hello world"
-            .byte $00
+            .text "hello world\n"
+            .byte $0a
+            .byte $01, $00
+            .text "how are you?\0"
 
 // When we display that text
 
@@ -50,7 +52,7 @@ test_text:
 
 expected_text_buffer:
        
-.text "                                        "
+.text " how are you?                           "
 .text "                                        "
 .text "                                        "
 .text "               hello world              "

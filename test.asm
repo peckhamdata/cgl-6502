@@ -10,7 +10,8 @@ start:
         // jsr test_plot_line
         // jsr test_copy_mem
         // jsr test_curve
-        jsr test_circ
+        // jsr test_circ
+        jsr test_text
         rts
 
 .import source "vars.asm"
@@ -33,5 +34,7 @@ start:
 .import source "math.asm"
 .import source "test/test_circ.asm"
 .import source "circ.asm"
+.import source "test/test_text.asm"
+.import source "text.asm"
 
 // 1900 concurrent  

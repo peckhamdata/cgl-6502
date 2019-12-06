@@ -6,7 +6,7 @@ text_plot:  ldy #$00
             sta $02
             lda text_src+1
             sta $03
-            lda ($02),y
+!next:      lda ($02),y
             sta p0
             iny
             lda ($02),y
@@ -24,5 +24,17 @@ text_plot:  ldy #$00
             iny
             lda ($02),y
             sta plot_char
+            cmp #$5c // control character
             bne !loop-
-            rts
+            iny
+            lda ($02),y
+            cmp #$0e
+            bne !next+
+            iny
+            iny
+            jmp !next-
+!next:      cmp #$30
+            beq !exit+
+            dey
+            jmp !loop-
+!exit:      rts
