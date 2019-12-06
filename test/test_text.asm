@@ -48,8 +48,6 @@ test_text:
 !result:    sta $d020
             rts
 
-* = $3000
-
 expected_text_buffer:
        
 .text " how are you?                           "

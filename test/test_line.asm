@@ -63,13 +63,13 @@ expected_error: .byte $06 // .5 (!)
 expected_y_step: .byte $01
 
 test_plot_line: clc
-                lda #$00 // #<actual_line_buffer
+                lda #<actual_line_buffer
                 sta plot_buffer_lo
-                lda #$04 //#>actual_line_buffer
+                lda #>actual_line_buffer
                 sta plot_buffer_hi
-                lda #$28 // #$09
+                lda #$09
                 sta plot_buffer_x
-                lda #$19 // #$0e
+                lda #$0e
                 sta plot_buffer_y
 
                 // Given ^^^
@@ -107,7 +107,7 @@ test_plot_line: clc
 
                 lda #$09
                 sta buffers_x
-                lda #$0e
+                lda #$0b
                 sta buffers_y
                 jsr compare_buffers
                 lda cmp_res
@@ -118,9 +118,10 @@ test_plot_line: clc
     !result:    sta $d020
                 rts
 
+* = $3000
+
  expected_line_buffer:  .text "         "
                         .text "         "
-                        .text " :       "
                         .text " :       "
                         .text "  :      "
                         .text "  :      "
@@ -130,7 +131,7 @@ test_plot_line: clc
                         .text "     :   "
                         .text "      :  "
                         .text "       : "
-                        .text "        :"
+                        .text "       : "
                         .text "        :"
 
  actual_line_buffer:    .text "         "
