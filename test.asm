@@ -12,7 +12,8 @@ start:
         // jsr test_curve
         // jsr test_circ
         // jsr test_text
-        jsr test_figure
+        // jsr test_figure
+        jsr test_nine_slice
         rts
 
 .import source "vars.asm"
@@ -39,4 +40,5 @@ start:
 .import source "text.asm"
 .import source "test/test_figure.asm"
 .import source "figure.asm"
-// 1900 concurrent  
+.import source "test/test_nine_slice.asm"
+.import source "nine_slice.asm"
