@@ -5,7 +5,9 @@ nine_slice_h: .byte $00
 
 offset:		  .byte $00, $00
 
-nine_slice_chars: .text "abcdefghi"
+nine_slice_chars: .byte $55, $43, $49
+				  .byte $42, $3a, $42
+				  .byte $4a, $43, $4b
 nine_slice_h_tmp: .byte $00
 nine_slice_w_tmp: .byte $00
 
