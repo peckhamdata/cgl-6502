@@ -5,13 +5,14 @@ nine_slice_h: .byte $00
 
 offset:		  .byte $00, $00
 
-nine_slice_chars: .byte $55, $43, $49
-				  .byte $42, $3a, $42
-				  .byte $4a, $43, $4b
+nine_slice_chars: .byte $46, $46, $46
+				  .byte $42, $7e, $d4
+				  .byte $42, $7e, $d4
 nine_slice_h_tmp: .byte $00
 nine_slice_w_tmp: .byte $00
 
-* = $3000
+nine_slice_color: .byte $01
+
 nine_slice_plot:	txa
 					pha
 
@@ -64,6 +65,15 @@ nine_slice_plot:	txa
 					ldy #$00
 !loop:				lda nine_slice_chars,x
 					sta ($02),y
+					lda $03
+					pha
+				    clc	
+					adc plot_color_difference
+					sta $03
+					lda nine_slice_color
+					sta ($02),y
+					pla
+					sta $03
 					iny
 					cpy #$01
 					bne !next+

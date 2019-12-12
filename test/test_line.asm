@@ -118,8 +118,6 @@ test_plot_line: clc
     !result:    sta $d020
                 rts
 
-* = $3000
-
  expected_line_buffer:  .text "         "
                         .text "         "
                         .text " :       "

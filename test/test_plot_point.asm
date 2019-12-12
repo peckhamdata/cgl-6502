@@ -4,7 +4,6 @@
 
 // Then they should appear on screen
 
-// When the plotter is in headless mode
 test_plot_point:
             clc
             lda #<actual_plot_buffer
@@ -19,12 +18,12 @@ test_plot_point:
             sta p0
             lda plot_points_y,x
             sta p1
+            lda #$01
+            sta plot_color_difference
             jsr plot_point
             inx
             cpx #$05
             bne !loop-
-
-// Then we should just get the x/y co-ord back
             
             lda #<expected_plot_buffer
             sta expected_plot_buffer_lo
@@ -46,6 +45,25 @@ test_plot_point:
             jmp !result+
 !fail:      lda #red
 !result:    sta $d020
+
+            lda #<expected_color_buffer
+            sta expected_plot_buffer_lo
+            lda #>expected_color_buffer
+            sta expected_plot_buffer_hi
+
+            lda #<actual_color_buffer
+            sta actual_plot_buffer_lo
+            lda #>actual_color_buffer
+            sta actual_plot_buffer_hi
+
+            jsr compare_buffers
+            lda cmp_res
+            bne !fail+
+            lda #green
+            jmp !result+
+!fail:      lda #red
+!result:    sta $d020
+
             rts
 
 // Given X that is out of bounds
@@ -59,6 +77,10 @@ test_plot_point:
 // When we plot
 
 // Then ???
+
+// Test colour
+
+
 plot_points_x: .byte 0,1,2,3,4
 plot_points_y: .byte 4,3,2,1,0
 
@@ -68,8 +90,21 @@ expected_plot_buffer:  .text "    :"
                        .text " :   "
                        .text ":    "
 
+expected_color_buffer: .byte $00, $00, $00, $00, $01
+                       .byte $00, $00, $00, $01, $00
+                       .byte $00, $00, $01, $00, $00
+                       .byte $00, $01, $00, $00, $00
+                       .byte $01, $00, $00, $00, $00 
+
+* = $4100
 actual_plot_buffer:    .text "     "
                        .text "     "
                        .text "     "
                        .text "     "
                        .text "     "
+* = $4200
+actual_color_buffer:   .byte $00, $00, $00, $00, $00
+                       .byte $00, $00, $00, $00, $00
+                       .byte $00, $00, $00, $00, $00
+                       .byte $00, $00, $00, $00, $00
+                       .byte $00, $00, $00, $00, $00 

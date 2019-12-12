@@ -6,13 +6,15 @@ plot_buffer_hi:     .byte $04
 plot_buffer_x:      .byte $28
 plot_buffer_y:      .byte $18
 plot_char:          .byte $3a
+plot_color:         .byte $01
+
+plot_y_offset:      .byte $ff
+plot_color_difference: .byte $d4 // Difference in memory between char and color mem
 
 plot_point: 
             txa
             pha
             tya
-            pha
-            lda p1
             pha
 
             clc
@@ -20,10 +22,14 @@ plot_point:
             cmp plot_buffer_x
             bcs !exit+
 
-            clc
             lda p1
+            sbc plot_y_offset
+            sta p1
             cmp plot_buffer_y    
             bcs !exit+
+
+            lda p1
+            pha
 
             lda plot_buffer_x
             sta num2
@@ -74,11 +80,62 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
             lda plot_char
             sta ($02),y
 
-!exit:      pla
-            sta p1
+            // Do color - don't do this on the PET obvs
+
+            lda $03
+            pha
+            adc plot_color_difference
+            sta $03
+            lda plot_color
+            sta ($02),y
             pla
+            sta $03
+
+            pla
+            sta p1
+            
+            lda curve_is_filled
+            beq !next+
+            jsr plot_vertical
+!next:
+
+!exit:      pla
             tay
             pla
             tax
             rts
 
+// rename 'curve' specific variables
+
+plot_vertical:      ldx p1
+                    cpx plot_buffer_y
+                    beq !exit+    
+                    cpy plot_buffer_x
+                    bcs !exit+
+!loop:              lda $02
+                    clc
+                    adc plot_buffer_x
+                    sta $02
+                    bcc !next+
+                    inc $03
+!next:
+                    lda curve_fill_char
+                    sta ($02),y
+
+                    // Do color - don't do this on the PET obvs
+
+                    lda $03
+                    pha
+                    adc plot_color_difference
+                    sta $03
+                    lda curve_fill_color
+                    sta ($02),y
+                    pla
+                    sta $03
+
+                    inx
+                    cpx plot_buffer_y
+                    bne !loop-
+
+
+!exit:              rts

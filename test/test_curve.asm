@@ -1,4 +1,5 @@
-    // test_set_t: t = i / n_seg
+test_curve: 
+                // test_set_t: t = i / n_seg
                 ldx #$03
                 lda #$0a
                 sta curve_num_segments
@@ -66,7 +67,6 @@
 !fail:          lda #red
 !result:        sta $d020
 
-test_curve: 
                 // test_plot_curve
                 lda #$0a
                 sta curve_num_segments

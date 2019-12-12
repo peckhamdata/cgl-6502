@@ -11,13 +11,13 @@ curve_num_segments: .byte $09
                     .byte $00
 
 curve_vars:
-curve_pts_x:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_y:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_x:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y:         .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
-curve_pts_x_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_x_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_y_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-curve_pts_y_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_x_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_x_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y_lo:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+curve_pts_y_hi:     .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 curve_t:            .byte $00
                     .byte $00
@@ -30,6 +30,11 @@ curve_b:            .byte $00
                     .byte $00
 curve_c:            .byte $00
                     .byte $00
+
+curve_plot_char:    .byte $3a
+curve_fill_char:    .byte $00
+curve_is_filled:    .byte $00
+curve_fill_color:   .byte $01
 
 .macro curve_set_t() {        
                     lda #$00
@@ -247,4 +252,3 @@ curve_plot:         ldx #$00
                     beq !done+
                     jmp !loop-
 !done:              rts
-    
