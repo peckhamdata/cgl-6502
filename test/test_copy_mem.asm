@@ -101,24 +101,3 @@ test_copy_mem_a_hi:   .byte 0
 
 test_copy_mem_counter_lo:   .byte 0
 test_copy_mem_counter_hi:   .byte 0
-
-// MOVEDOWN LDY #0
-//          LDX SIZEH
-//          BEQ MD2
-// MD1      LDA (FROM),Y ; move a page at a time
-//          STA (TO),Y
-//          INY
-//          BNE MD1
-//          INC FROM+1
-//          INC TO+1
-//          DEX
-//          BNE MD1
-// MD2      LDX SIZEL
-//          BEQ MD4
-// MD3      LDA (FROM),Y ; move the remaining bytes
-//          STA (TO),Y
-//          INY
-//          DEX
-//          BNE MD3
-// MD4      RTS
-

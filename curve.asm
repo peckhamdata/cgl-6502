@@ -34,7 +34,7 @@ curve_c:            .byte $00
 curve_plot_char:    .byte $3a
 curve_fill_char:    .byte $00
 curve_is_filled:    .byte $00
-curve_fill_color:   .byte $01
+curve_fill_color:   .byte $08
 
 .macro curve_set_t() {        
                     lda #$00

@@ -20,10 +20,16 @@ start:
 //         sta $Da00,x
 //         inx
 //         bne !loop-        
-//         jsr test_figure
-        // jsr test_filled_curve
-        jsr test_nine_slice
+// lda #$0e
+// sta $d020
+// sta $d021
 
+// jsr test_raster
+
+//        jsr test_filled_curve
+        // jsr test_nine_slice
+        // jsr test_figure
+        jsr test_fill_mem
         rts
 
 .import source "vars.asm"
@@ -53,3 +59,6 @@ start:
 .import source "figure.asm"
 .import source "test/test_nine_slice.asm"
 .import source "nine_slice.asm"
+.import source "test/test_raster.asm"
+.import source "fill.asm"
+.import source "test/test_fill.asm"

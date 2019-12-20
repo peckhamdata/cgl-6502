@@ -29,7 +29,8 @@ test_nine_slice:
 !loop:      lda test_nine_slice_x,x
             sta nine_slice_x
             lda test_nine_slice_y,x
-            adc #$05
+            clc
+            adc #$0F
             sta nine_slice_y
 
             lda test_nine_slice_w,x
@@ -44,17 +45,16 @@ test_nine_slice:
             sta plot_buffer_lo
             lda #$04
             sta plot_buffer_hi
-            inc nine_slice_color
 
             jsr nine_slice_plot
 
-            ldy #$00
-!wait:      lda #$ff
-            cmp $d012
-            bne !wait-
-            iny
-            cpy #$20
-            bne !wait-
+//             ldy #$00
+// !wait:      lda #$ff
+//             cmp $d012
+//             bne !wait-
+//             iny
+//             cpy #$20
+//             bne !wait-
 
             inx
             cpx #$10

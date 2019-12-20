@@ -1,7 +1,9 @@
 
 text_src:   .byte $00, $00
 
-text_plot:  ldy #$00
+text_plot:  tya
+            pha
+            ldy #$00
             lda text_src
             sta $02
             lda text_src+1
@@ -31,10 +33,11 @@ text_plot:  ldy #$00
             cmp #$0e
             bne !next+
             iny
-            iny
             jmp !next-
 !next:      cmp #$30
             beq !exit+
             dey
             jmp !loop-
-!exit:      rts
+!exit:      pla
+            tay
+            rts

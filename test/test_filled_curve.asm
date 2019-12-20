@@ -25,11 +25,18 @@ test_filled_curve:
                 sta plot_buffer_x
                 lda #$18
                 sta plot_buffer_y            
-                lda #$d4
+                lda #$a0
                 sta plot_char
                 sta curve_fill_char
                 lda #$01
                 sta curve_is_filled
+                lda #$0a
+                sta plot_y_offset
+
+                lda #$0f
+                sta plot_color
+                sta curve_fill_color
+
                 jsr curve_plot
 
                 lda #$0a
@@ -39,10 +46,12 @@ test_filled_curve:
                 lda #$27 // #$27
                 sta curve_p3_x
 
-                lda #$7e
+                lda #$a0
                 sta plot_char
                 sta curve_fill_char
-
+                lda #$0c
+                sta plot_color
+                sta curve_fill_color
                 lda #$29
                 sta curve_p1_y
                 lda #$04
@@ -71,7 +80,7 @@ test_filled_curve:
                 lda #green
                 jmp !result+
     !fail:      lda #red
-    !result:    sta $d020
+    // !result:    sta $d020
                 rts
 
 expected_filled_curve_buffer:

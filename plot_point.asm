@@ -4,9 +4,9 @@ p1:                 .byte $0
 plot_buffer_lo:     .byte $00
 plot_buffer_hi:     .byte $04
 plot_buffer_x:      .byte $28
-plot_buffer_y:      .byte $18
+plot_buffer_y:      .byte $19
 plot_char:          .byte $3a
-plot_color:         .byte $01
+plot_color:         .byte $08
 
 plot_y_offset:      .byte $ff
 plot_color_difference: .byte $d4 // Difference in memory between char and color mem
@@ -82,24 +82,38 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
 
             // Do color - don't do this on the PET obvs
 
-            lda $03
-            pha
-            adc plot_color_difference
-            sta $03
-            lda plot_color
-            sta ($02),y
-            pla
-            sta $03
+            // lda $03
+            // pha
+            // clc
+            // adc plot_color_difference
+            // sta $03
+            // lda plot_color
+            // sta ($02),y
+            // pla
+            // sta $03
 
             pla
             sta p1
             
-            lda curve_is_filled
-            beq !next+
-            jsr plot_vertical
+            // lda curve_is_filled
+            // beq !next+
+            // jsr plot_vertical
 !next:
 
-!exit:      pla
+!exit:      
+//             //// Delay
+
+//             ldx #$3f
+// !loop_i:    ldy #$2f
+// !loop_ii:   nop
+//             dey
+//             bne !loop_ii-
+//             dex
+//             bne !loop_i-
+
+//             //// Delay
+
+            pla
             tay
             pla
             tax
@@ -107,35 +121,35 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
 
 // rename 'curve' specific variables
 
-plot_vertical:      ldx p1
-                    cpx plot_buffer_y
-                    beq !exit+    
-                    cpy plot_buffer_x
-                    bcs !exit+
-!loop:              lda $02
-                    clc
-                    adc plot_buffer_x
-                    sta $02
-                    bcc !next+
-                    inc $03
-!next:
-                    lda curve_fill_char
-                    sta ($02),y
+// plot_vertical:      ldx p1
+//                     cpx plot_buffer_y
+//                     beq !exit+    
+//                     cpy plot_buffer_x
+//                     bcs !exit+
+// !loop:              lda $02
+//                     clc
+//                     adc plot_buffer_x
+//                     sta $02
+//                     bcc !next+
+//                     inc $03
+// !next:
+//                     lda curve_fill_char
+//                     sta ($02),y
 
-                    // Do color - don't do this on the PET obvs
+//                     // Do color - don't do this on the PET obvs
 
-                    lda $03
-                    pha
-                    adc plot_color_difference
-                    sta $03
-                    lda curve_fill_color
-                    sta ($02),y
-                    pla
-                    sta $03
+//                     lda $03
+//                     pha
+//                     clc
+//                     adc plot_color_difference
+//                     sta $03
+//                     lda curve_fill_color
+//                     sta ($02),y
+//                     pla
+//                     sta $03
 
-                    inx
-                    cpx plot_buffer_y
-                    bne !loop-
+//                     inx
+//                     cpx plot_buffer_y
+//                     bne !loop-
 
-
-!exit:              rts
+// !exit:              rts

@@ -103,6 +103,8 @@ test_curve:
     !result:    sta $d020
                 rts
 
+// test curve with plot buffer offset for large difference between mid and start/end points
+
  expected_curve_buffer: .text " ::                          "
                         .text "   :                         "
                         .text "    ::                       "

@@ -1,13 +1,12 @@
 // Cycle through the sprite animation
 
 test_figure:    lda #$00
-                sta $d020
-                sta $d021
+                sta $d027
                 lda #$01
                 sta $d015
                 lda #$00
                 sta $d000
-                lda #$a0
+                lda #$e5
                 sta $d001
                 ldy #$00
 !start:         ldx #$c1
