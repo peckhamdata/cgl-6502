@@ -4,8 +4,8 @@ ddf_y:          .byte $00
 ddf_x:          .byte $00
 xx:             .byte $00
 yy:             .byte $00
-circ_x:         .byte $04
-circ_y:         .byte $04
+circ_x:         .byte $00
+circ_y:         .byte $00
 
 circ_plot:      txa
                 pha

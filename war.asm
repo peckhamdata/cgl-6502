@@ -167,9 +167,11 @@ two_tribes:
 !cont:          cpx #$02
                 bne !menu_loop-
 !next:          
-                // Lets get ready to rumsfeld...
-                ldx #$00
-                lda target_x1,x
+                jsr launch_missiles
+                rts
+
+launch_missiles: ldx #$00
+!loop:          lda target_x1,x
                 sta curve_p1_x
                 lda target_y1,x
                 sta curve_p1_y
@@ -187,7 +189,7 @@ two_tribes:
 
                 // Some sort of telemetry bobbins
 
-                jsr telemetry
+                // jsr telemetry
 
                 // Dialogue 
 
@@ -199,10 +201,17 @@ two_tribes:
                 sta plot_char
                 jsr curve_plot
 
+                lda curve_p3_x
+                sta circ_x
+                lda curve_p3_y
+                sta circ_y
                 jsr bang
+                inx
+                cpx #$02
+                bne !loop-
                 rts
-
 * = $4000
+
 set_target:   
                 tya
                 pha
@@ -234,17 +243,13 @@ set_target:
                 sec
                 sbc tmp_offset
                 tay
-                iny
-                iny
-                iny
                 pla
                 cpx #$01
-                beq slot_2
-                sta target_1,y // stick it in the right targets box
+                beq !slot_2+
+                sta target_1+3,y // stick it in the right targets box
                 jmp !cont+
-slot_2:         sta target_2,y
-!cont:          dey
-                dey
+!slot_2:        sta target_2+3,y
+!cont:          iny
                 cpy #$0b
                 beq !next+
                 tya
@@ -252,8 +257,14 @@ slot_2:         sta target_2,y
                 adc tmp_offset
                 tay
                 jmp !loop-
-!next:          iny
+!next:          tya
+                clc
+                adc tmp_offset
+                tay
                 iny
+                iny
+                cpx #$01
+                beq !slot_2+
                 lda ($02),y
                 sta target_x1
                 iny      
@@ -270,8 +281,28 @@ slot_2:         sta target_2,y
                 sta target_x3
                 iny      
                 lda ($02),y
-                sta target_y3      
-                pla
+                sta target_y3  
+                jmp !exit+
+!slot_2:                    
+                lda ($02),y
+                sta target_x1+1
+                iny      
+                lda ($02),y
+                sta target_y1+1
+                iny      
+                lda ($02),y
+                sta target_x2+1
+                iny      
+                lda ($02),y
+                sta target_y2+1
+                iny      
+                lda ($02),y
+                sta target_x3+1
+                iny      
+                lda ($02),y
+                sta target_y3+1
+
+!exit:          pla
                 tay
 
                 rts
@@ -299,8 +330,8 @@ usa_cities:     .byte $03, $04
                 .byte $07, $0b
                 .text "las vegas\0"
                 .byte $00, $00
-                .byte $00, $00
-                .byte $00, $00
+                .byte $0a, $0a
+                .byte $0d, $0f
 
                 .byte $1c, $0b
                 .text "wash d.c.\0"
@@ -326,16 +357,18 @@ ussr_cities:    .byte $03, $04
                 .byte $00, $00
                 .byte $00, $00
 
+* = $4200
+
 targets:        .byte $00, $00
 
-target_x1:      .byte $1c, $00
+target_x1:      .byte $00, $00
 target_y1:      .byte $00, $00
 
-target_x2:      .byte $0f, $00
-target_y2:      .byte $08, $00
+target_x2:      .byte $00, $00
+target_y2:      .byte $00, $00
 
-target_x3:      .byte $03, $00
-target_y3:      .byte $0e, $00
+target_x3:      .byte $00, $00
+target_y3:      .byte $00, $00
 
 
 maps_low:       .byte <ussr_map, <usa_map
@@ -495,6 +528,8 @@ delay:
             rts
 
 bang:
+                txa
+                pha
                 lda #$a0
                 sta plot_char
                 lda #$10
@@ -520,6 +555,8 @@ bang:
                 inx
                 cpx #$0a
                 bne !loop-
+                pla
+                tax
                 rts
 
 .import source "copy_mem.asm"

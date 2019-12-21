@@ -1,11 +1,11 @@
 
-curve_p1_x:         .byte 1
-curve_p2_x:         .byte 15
-curve_p3_x:         .byte 35
+curve_p1_x:         .byte 0
+curve_p2_x:         .byte 0
+curve_p3_x:         .byte 0
 
 curve_p1_y:         .byte 0
-curve_p2_y:         .byte 8
-curve_p3_y:         .byte 13
+curve_p2_y:         .byte 0
+curve_p3_y:         .byte 0
 
 curve_num_segments: .byte $09
                     .byte $00
@@ -216,7 +216,9 @@ curve_fill_color:   .byte $08
                     sta curve_pts_y,x
 }
 
-curve_plot:         ldx #$00
+curve_plot:         txa
+                    pha
+                    ldx #$00
                     lda #$00
 !loop:              sta (curve_vars),x
                     inx
@@ -251,4 +253,6 @@ curve_plot:         ldx #$00
                     cpx curve_num_segments      
                     beq !done+
                     jmp !loop-
-!done:              rts
+!done:              pla
+                    tax
+                    rts
