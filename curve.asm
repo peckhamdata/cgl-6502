@@ -1,4 +1,3 @@
-
 curve_p1_x:         .byte 0
 curve_p2_x:         .byte 0
 curve_p3_x:         .byte 0

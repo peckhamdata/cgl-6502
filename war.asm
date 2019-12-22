@@ -12,6 +12,7 @@ sta $d020
 sta $d021
 
 .var target_data_len = $13
+.var target_blank = $2d
 
 two_tribes:  	
 
@@ -60,6 +61,11 @@ two_tribes:
                 clc
                 sbc #$30
                 sta side
+                tax
+                lda #$01
+                sta (human),x
+
+!turn:          lda side      
                 tax
                 lda (maps_low),x                
                 sta copy_mem_source_lo
@@ -125,10 +131,22 @@ two_tribes:
 
                 jsr text_plot
 
+// Is it a human player this round?
+                ldx side
+                lda human,x
+                sta auto
+
 // Could factor this out into a function
 
                 ldx #$00
 !menu_loop:              
+                lda auto
+                bne !next+
+                // set on auto pilot
+                lda #$01
+                sta (targets),x
+                jmp do_targets
+!next:                
                 txa
                 pha
                 jsr Keyboard
@@ -149,7 +167,7 @@ two_tribes:
                 sec
                 sbc #$31
                 sta (targets),x 
-
+do_targets:
                 jsr set_target
 
                 lda #<selected_targets_text
@@ -168,7 +186,40 @@ two_tribes:
                 bne !menu_loop-
 !next:          
                 jsr launch_missiles
+                // Switch sides
+                lda side
+                eor #$01
+                sta side
+
+                // Clear targets
+                tya
+                pha
+                lda #target_blank
+                ldy #$09
+!loop:          sta target_1+4,y
+                sta target_2+4,y
+                dey
+                bne !loop-
+                lda #<selected_targets_text
+                sta text_src
+                lda #>selected_targets_text
+                sta text_src+1
+
+                jsr text_plot
+                dec game_round
+                lda game_round
+                bne !cont+
+                // end of game
+                jsr dialogue
+                pla
+                tay
                 rts
+
+!cont:          pla
+                tay
+                jmp !turn-
+                rts
+
 
 launch_missiles: ldx #$00
 !loop:          lda target_x1,x
@@ -189,7 +240,7 @@ launch_missiles: ldx #$00
 
                 // Some sort of telemetry bobbins
 
-                // jsr telemetry
+                jsr telemetry
 
                 // Dialogue 
 
@@ -199,6 +250,8 @@ launch_missiles: ldx #$00
 
                 lda #$2b
                 sta plot_char
+                lda #$09
+                sta curve_num_segments
                 jsr curve_plot
 
                 lda curve_p3_x
@@ -209,8 +262,7 @@ launch_missiles: ldx #$00
                 inx
                 cpx #$02
                 bne !loop-
-                rts
-* = $4000
+                rts 
 
 set_target:   
                 tya
@@ -313,13 +365,15 @@ TempX: .byte $00
 TempY: .byte $00
 
 side:           .byte $00
+human:          .byte $00, $00
+auto:           .byte $00
+
+game_round:     .byte $06
 
 cities_lo:      .byte <ussr_cities, <usa_cities
 cities_hi:      .byte >ussr_cities, >usa_cities
 
 // x,y, name (9 chars)
-
-* = $4100
 
 usa_cities:     .byte $03, $04
                 .text "seattle  \0"
@@ -339,7 +393,7 @@ usa_cities:     .byte $03, $04
                 .byte $00, $00
                 .byte $00, $00
 
-ussr_cities:    .byte $03, $04
+ussr_cities:    .byte $08, $09
                 .text "moscow   \0"
                 .byte $00, $00
                 .byte $00, $00
@@ -356,8 +410,6 @@ ussr_cities:    .byte $03, $04
                 .byte $00, $00
                 .byte $00, $00
                 .byte $00, $00
-
-* = $4200
 
 targets:        .byte $00, $00
 
@@ -394,6 +446,7 @@ selected_targets_text:
                 target_2:
                 .byte $12, $18
                 .text "ii:---------\0"
+
 
 // city
 // inbound co-ords
@@ -452,19 +505,19 @@ trajectory_data:
 
 dialogue:       
 
-            lda #$00
+            lda #$05
             sta nine_slice_x
-            lda #$00
+            lda #$02
             sta nine_slice_y
 
-            lda #$28
+            lda #$1d
             sta nine_slice_w
-            lda #$05
+            lda #$12
             sta nine_slice_h
 
             jsr nine_slice_plot
 
-            ldx #$0b
+            ldx #$05
             lda #<dialogue_text
             sta text_src
             lda #>dialogue_text
@@ -483,28 +536,18 @@ dialogue:
 
 dialogue_text:
 
-.byte $01, $01
-.text "primary targets acquired  \0"
-.byte $01, $01
-.text "                          \0"
-.byte $01, $01
-.text "lets get ready to...      \0"
-.byte $01, $01
-.text "                          \0"
-.byte $01, $01
-.text "lets get ready to...      \0"
-.byte $01, $01
-.text "                          \0"
-.byte $01, $01
-.text "lets get ready to rumsfeld\0"
-.byte $01, $01
-.text "                          \0"
-.byte $01, $01
-.text "sorry                     \0"
-.byte $01, $01
-.text "                          \0"
-.byte $01, $01
-.text "wrong decade              \0"
+.byte $06, $03
+.text "greetings professor falken\0"
+.byte $06, $07
+.text "hello                     \0"
+.byte $06, $0b
+.text "a strange game.           \0"
+.byte $06, $0d
+.text "the only winning move is  \0"
+.byte $06, $0f
+.text "not to play               \0"
+
+// how about a nice game of 'bad king john?'
 
 delay_outer:     .byte $4f
 delay_inner:     .byte $ff
@@ -532,6 +575,8 @@ bang:
                 pha
                 lda #$a0
                 sta plot_char
+                lda #$14
+                sta plot_buffer_y
                 lda #$10
                 sta delay_outer
                 lda #$10
@@ -555,14 +600,17 @@ bang:
                 inx
                 cpx #$0a
                 bne !loop-
+                lda #$19
+                sta plot_buffer_y
                 pla
                 tax
                 rts
 
+.import source "curve.asm"
+
 .import source "copy_mem.asm"
 .import source "text.asm"
 .import source "line.asm"
-.import source "curve.asm"
 .import source "plot_point.asm"
 .import source "math.asm"
 .import source "maps.asm"
