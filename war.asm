@@ -11,8 +11,10 @@ lda #$00
 sta $d020
 sta $d021
 
-.var target_data_len = $13
+.var target_data_len = $15
 .var target_blank = $2d
+.var target_name_len = $0a
+.var num_cities = $05
 
 two_tribes:  	
 
@@ -114,7 +116,7 @@ two_tribes:
                 inc text_src+1
 !next:                
                 inx
-                cpx #$03
+                cpx #num_cities
                 bne !loop-
 
                 lda #<turn_text
@@ -143,7 +145,7 @@ two_tribes:
                 lda auto
                 bne !next+
                 // set on auto pilot
-                lda #$01
+                lda (mad_targets),x
                 sta (targets),x
                 jmp do_targets
 !next:                
@@ -195,7 +197,7 @@ do_targets:
                 tya
                 pha
                 lda #target_blank
-                ldy #$09
+                ldy #target_name_len
 !loop:          sta target_1+4,y
                 sta target_2+4,y
                 dey
@@ -250,7 +252,7 @@ launch_missiles: ldx #$00
 
                 lda #$2b
                 sta plot_char
-                lda #$09
+                lda #$0a
                 sta curve_num_segments
                 jsr curve_plot
 
@@ -302,7 +304,7 @@ set_target:
                 jmp !cont+
 !slot_2:        sta target_2+3,y
 !cont:          iny
-                cpy #$0b
+                cpy #$0c
                 beq !next+
                 tya
                 clc
@@ -334,6 +336,9 @@ set_target:
                 iny      
                 lda ($02),y
                 sta target_y3  
+                iny      
+                lda ($02),y
+                sta mad_targets  
                 jmp !exit+
 !slot_2:                    
                 lda ($02),y
@@ -353,7 +358,9 @@ set_target:
                 iny      
                 lda ($02),y
                 sta target_y3+1
-
+                iny      
+                lda ($02),y
+                sta mad_targets+1  
 !exit:          pla
                 tay
 
@@ -376,42 +383,78 @@ cities_hi:      .byte >ussr_cities, >usa_cities
 // x,y, name (9 chars)
 
 usa_cities:     .byte $03, $04
-                .text "seattle  \0"
+                .text "seattle   \0"
                 .byte $1c, $00
                 .byte $0f, $08
                 .byte $03, $04
+                .byte $00
+
+                .byte $24, $07
+                .text "nyc       \0"
+                .byte $00, $00
+                .byte $14, $03
+                .byte $24, $07
+                .byte $01
 
                 .byte $07, $0b
-                .text "las vegas\0"
+                .text "las vegas \0"
                 .byte $00, $00
-                .byte $0a, $0a
-                .byte $0d, $0f
+                .byte $03, $0a
+                .byte $07, $0b
+                .byte $02
 
                 .byte $1c, $0b
-                .text "wash d.c.\0"
+                .text "washington\0"
                 .byte $00, $00
-                .byte $00, $00
-                .byte $00, $00
+                .byte $09, $08
+                .byte $1c, $0b
+                .byte $01
 
-ussr_cities:    .byte $08, $09
-                .text "moscow   \0"
+                .byte $14, $12
+                .text "houston   \0"
                 .byte $00, $00
-                .byte $00, $00
-                .byte $00, $00
+                .byte $18, $05
+                .byte $14, $12
+                .byte $04
 
-                .byte $07, $0b
-                .text "sevastopl\0"
+ussr_cities:    
+                .byte $0a, $06
+                .text "archangel \0"
                 .byte $00, $00
-                .byte $00, $00
-                .byte $00, $00
+                .byte $03, $02
+                .byte $0a, $06
+                .byte $00
 
-                .byte $17, $0b
-                .text "minsk    \0"
+                .byte $07, $09
+                .text "moscow    \0"
                 .byte $00, $00
+                .byte $04, $07
+                .byte $07, $09
+                .byte $03
+
+                .byte $1d, $0b
+                .text "vladivosok\0"
                 .byte $00, $00
+                .byte $0f, $0f
+                .byte $1d, $0b
+                .byte $02
+
+                .byte $03, $0d
+                .text "minsk     \0"
                 .byte $00, $00
+                .byte $01, $03
+                .byte $03, $0d
+                .byte $03
+
+                .byte $03, $11
+                .text "sevastopol\0"
+                .byte $00, $00
+                .byte $02, $0a
+                .byte $03, $11
+                .byte $04
 
 targets:        .byte $00, $00
+mad_targets:    .byte $00, $00
 
 target_x1:      .byte $00, $00
 target_y1:      .byte $00, $00
@@ -442,10 +485,10 @@ selected_targets_text:
 
                 target_1:
                 .byte $03, $18
-                .text " i:---------\n"
+                .text " i:----------\n"
                 target_2:
-                .byte $12, $18
-                .text "ii:---------\0"
+                .byte $13, $18
+                .text "ii:----------\0"
 
 
 // city
@@ -549,7 +592,7 @@ dialogue_text:
 
 // how about a nice game of 'bad king john?'
 
-delay_outer:     .byte $4f
+delay_outer:     .byte $5f
 delay_inner:     .byte $ff
 
 delay:
