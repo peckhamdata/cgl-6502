@@ -14,9 +14,12 @@ sta $d021
 .var target_data_len = $15
 .var target_blank = $2d
 .var target_name_len = $0a
-.var num_cities = $05
+.var num_cities = $06
+.var blast_radius = $06
 
 two_tribes:  	
+                lda #$00
+                sta plot_delay
 
                 lda #<two_tribes_map
                 sta copy_mem_source_lo
@@ -158,7 +161,7 @@ two_tribes:
                 // Check A for Alphanumeric keys
                 cmp #$31
                 bcc !next+
-                cmp #$35
+                cmp #$36
                 beq !do+
                 bcs !next+
 !do:
@@ -207,15 +210,20 @@ do_targets:
                 lda #>selected_targets_text
                 sta text_src+1
 
-                jsr text_plot
                 dec game_round
                 lda game_round
                 bne !cont+
                 // end of game
+                lda #$ff
+                sta delay_outer
+                lda #$ff
+                sta delay_inner
+                jsr delay
+                jsr delay
                 jsr dialogue
                 pla
                 tay
-                rts
+!end:           jmp !end-
 
 !cont:          pla
                 tay
@@ -224,6 +232,9 @@ do_targets:
 
 
 launch_missiles: ldx #$00
+                lda #$01
+                sta plot_delay
+
 !loop:          lda target_x1,x
                 sta curve_p1_x
                 lda target_y1,x
@@ -241,8 +252,9 @@ launch_missiles: ldx #$00
 
 
                 // Some sort of telemetry bobbins
-
+                jsr delay
                 jsr telemetry
+                jsr delay
 
                 // Dialogue 
 
@@ -254,13 +266,21 @@ launch_missiles: ldx #$00
                 sta plot_char
                 lda #$0a
                 sta curve_num_segments
+
                 jsr curve_plot
+
+                lda #$00
+                sta plot_delay
 
                 lda curve_p3_x
                 sta circ_x
                 lda curve_p3_y
                 sta circ_y
                 jsr bang
+
+                lda #$01
+                sta plot_delay
+
                 inx
                 cpx #$02
                 bne !loop-
@@ -396,10 +416,17 @@ usa_cities:     .byte $03, $04
                 .byte $24, $07
                 .byte $01
 
+                .byte $0f, $09
+                .text "norad     \0"
+                .byte $27, $00
+                .byte $14, $15
+                .byte $0f, $09
+                .byte $05
+
                 .byte $07, $0b
                 .text "las vegas \0"
-                .byte $00, $00
-                .byte $03, $0a
+                .byte $20, $00
+                .byte $09, $0a
                 .byte $07, $0b
                 .byte $02
 
@@ -408,7 +435,7 @@ usa_cities:     .byte $03, $04
                 .byte $00, $00
                 .byte $09, $08
                 .byte $1c, $0b
-                .byte $01
+                .byte $03
 
                 .byte $14, $12
                 .text "houston   \0"
@@ -421,7 +448,7 @@ ussr_cities:
                 .byte $0a, $06
                 .text "archangel \0"
                 .byte $00, $00
-                .byte $03, $02
+                .byte $04, $06
                 .byte $0a, $06
                 .byte $00
 
@@ -442,9 +469,16 @@ ussr_cities:
                 .byte $03, $0d
                 .text "minsk     \0"
                 .byte $00, $00
-                .byte $01, $03
+                .byte $02, $09
                 .byte $03, $0d
-                .byte $03
+                .byte $01
+
+                .byte $13, $0d
+                .text "tomsk     \0"
+                .byte $00, $00
+                .byte $02, $09
+                .byte $03, $0d
+                .byte $05
 
                 .byte $03, $11
                 .text "sevastopol\0"
@@ -533,18 +567,24 @@ tele_text:
 
 trajectory_data:
                 .byte $01, $16
-                .text "a-5214-a 9226 5234\n"
+                .text "a-5214-a "
+tr_1:           .text "9226 5234\n"
                 .byte $01, $17
-                .text "       b 6824 5132\n"
+                .text "       b "
+tr_2:           .text "6824 5132\n"
                 .byte $01, $18
-                .text "       c 2196 7261\n"
+                .text "       c "
+tr_3:           .text "2196 7261\n"
 
                 .byte $15, $16
-                .text "a-5214-a 9226 5234\n"
+                .text "a-5214-a "
+tr_4:           .text "9226 5234\n"
                 .byte $15, $17
-                .text "       b 6824 5132\n"
+                .text "       b " 
+tr_5:           .text "6824 5132\n"
                 .byte $15, $18
-                .text "       c 2196 7261\0"
+                .text "       c "
+tr_6:           .text "2196 7261\0"
 
 dialogue:       
 
@@ -555,18 +595,19 @@ dialogue:
 
             lda #$1d
             sta nine_slice_w
-            lda #$12
+            lda #$14
             sta nine_slice_h
 
             jsr nine_slice_plot
 
-            ldx #$05
+            ldx #$07
             lda #<dialogue_text
             sta text_src
             lda #>dialogue_text
             sta text_src+1
 !loop:      jsr text_plot
             jsr delay
+            jsr delay            
             lda text_src
             sec
             adc #$1d
@@ -589,10 +630,12 @@ dialogue_text:
 .text "the only winning move is  \0"
 .byte $06, $0f
 .text "not to play               \0"
+.byte $06, $11
+.text "how about a nice game of  \0"
+.byte $06, $13
+.text "bad king john?            \0"
 
-// how about a nice game of 'bad king john?'
-
-delay_outer:     .byte $5f
+delay_outer:     .byte $9f
 delay_inner:     .byte $ff
 
 delay:
@@ -630,21 +673,48 @@ bang:
                 jsr circ_plot
                 jsr delay
                 inx
-                cpx #$0a
+                cpx #blast_radius
                 bne !loop-
 
                 lda #$20
                 sta plot_char
 
+                lda #$2e
+                sta plot_char
                 ldx #$01
 !loop:          stx circ_radius
                 jsr circ_plot
+
+                // update the map for the next round
+
+                txa
+                pha
+                lda plot_buffer_lo
+                pha
+                lda plot_buffer_hi
+                pha
+                ldx side
+                lda (maps_low),x                
+                sta plot_buffer_lo
+                lda (maps_hi),x
+                sta plot_buffer_hi
+
+                jsr circ_plot
+                pla
+                sta plot_buffer_hi
+                pla
+                sta plot_buffer_lo
+
+                pla
+                tax
+
                 jsr delay
                 inx
-                cpx #$0a
+                cpx #blast_radius
                 bne !loop-
                 lda #$19
                 sta plot_buffer_y
+
                 pla
                 tax
                 rts

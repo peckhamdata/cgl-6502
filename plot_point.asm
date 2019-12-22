@@ -11,6 +11,8 @@ plot_color:         .byte $08
 plot_y_offset:      .byte $ff
 plot_color_difference: .byte $d4 // Difference in memory between char and color mem
 
+plot_delay:         .byte $00
+
 plot_point: 
             txa
             pha
@@ -103,16 +105,18 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
 !exit:      
 //             //// Delay
 
-//             ldx #$3f
-// !loop_i:    ldy #$2f
-// !loop_ii:   nop
-//             dey
-//             bne !loop_ii-
-//             dex
-//             bne !loop_i-
+            lda plot_delay
+            beq !next+
+            ldx #$3f
+!loop_i:    ldy #$2f
+!loop_ii:   nop
+            dey
+            bne !loop_ii-
+            dex
+            bne !loop_i-
 
 //             //// Delay
-
+!next:
             pla
             tay
             pla

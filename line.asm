@@ -13,6 +13,9 @@ y_step:     .byte $00
 
 xtmp:       .byte $00
 
+line_delay: .byte $0c
+line_delay_inner: .byte $ff
+
 plot_line:  txa
             pha
             tya
@@ -21,7 +24,24 @@ plot_line:  txa
             sta y0
             clc
             ldx x0
-!loop:      lda steep
+!loop:      
+            tya
+            pha
+            ldy line_delay
+!loop_i:    beq !next+
+            tya
+            pha
+            ldy line_delay_inner
+!loop_ii:   dey
+            bne !loop_ii-
+            pla
+            tay
+            dey
+            jmp !loop_i-
+
+!next:      pla
+            tay      
+            lda steep
             cmp #$01
             bne !next+
             lda y            // Plot y,x

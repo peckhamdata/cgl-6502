@@ -1,9 +1,20 @@
 // http://www.6502.org/source/general/memory_move.html
 
+copy_delay:		.byte $ff
+
 copy_mem:       ldy #$0
                 ldx copy_mem_dest_length_hi
                 beq !next+
-!loop:          lda copy_mem_source_lo
+!loop:          
+				txa
+				pha
+				ldx copy_delay
+!loop_i:  	    beq !next+
+				dex
+				jmp !loop_i-	
+!next:  	    pla
+				tax
+				lda copy_mem_source_lo
 				sta $02
 				lda copy_mem_source_hi
 				sta $03
