@@ -9,27 +9,12 @@ start:
         // jsr test_init_line
         // jsr test_plot_line
         // jsr test_copy_mem
-        // jsr test_curve
+        jsr test_curve
         // jsr test_circ
         // jsr test_text
-
-//         ldx #$00
-//         lda #$05
-// !loop:  sta $D800,x
-//         sta $D900,x
-//         sta $Da00,x
-//         inx
-//         bne !loop-        
-// lda #$0e
-// sta $d020
-// sta $d021
-
-// jsr test_raster
-
-//        jsr test_filled_curve
+        // jsr test_filled_curve
         // jsr test_nine_slice
-        // jsr test_figure
-        jsr test_fill_mem
+        // jsr test_fill_mem
         rts
 
 .import source "vars.asm"
@@ -55,10 +40,7 @@ start:
 .import source "circ.asm"
 .import source "test/test_text.asm"
 .import source "text.asm"
-.import source "test/test_figure.asm"
-.import source "figure.asm"
 .import source "test/test_nine_slice.asm"
 .import source "nine_slice.asm"
-.import source "test/test_raster.asm"
 .import source "fill.asm"
 .import source "test/test_fill.asm"

@@ -71,11 +71,11 @@ test_curve:
                 lda #$0a
                 sta curve_num_segments
 
-                lda #<actual_curve_buffer
+                lda #$00 // <actual_curve_buffer
                 sta plot_buffer_lo
-                lda #>actual_curve_buffer
+                lda #$04 // >actual_curve_buffer
                 sta plot_buffer_hi
-                lda #$1d
+                lda #$28 // 1d
                 sta plot_buffer_x
                 lda #$0b
                 sta plot_buffer_y            

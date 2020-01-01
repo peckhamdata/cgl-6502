@@ -83,17 +83,18 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
             sta ($02),y
 
             // Do color - don't do this on the PET obvs
-
-            // lda $03
-            // pha
-            // clc
-            // adc plot_color_difference
-            // sta $03
-            // lda plot_color
-            // sta ($02),y
-            // pla
-            // sta $03
-
+            lda plot_color_difference
+            beq no_color
+            lda $03
+            pha
+            clc
+            adc plot_color_difference
+            sta $03
+            lda plot_color
+            sta ($02),y
+            pla
+            sta $03
+no_color:
             pla
             sta p1
             

@@ -12,14 +12,16 @@ test_plot_point:
             sta plot_buffer_hi
             lda #$05
             sta plot_buffer_x
+            lda #$05
             sta plot_buffer_y            
+            lda #$01
+            sta plot_color_difference
             ldx #$00
 !loop:      lda plot_points_x,x
             sta p0
             lda plot_points_y,x
             sta p1
-            lda #$01
-            sta plot_color_difference
+            stx plot_color
             jsr plot_point
             inx
             cpx #$05
@@ -90,11 +92,11 @@ expected_plot_buffer:  .text "    :"
                        .text " :   "
                        .text ":    "
 
-expected_color_buffer: .byte $00, $00, $00, $00, $01
-                       .byte $00, $00, $00, $01, $00
-                       .byte $00, $00, $01, $00, $00
+expected_color_buffer: .byte $00, $00, $00, $00, $04
+                       .byte $00, $00, $00, $03, $00
+                       .byte $00, $00, $02, $00, $00
                        .byte $00, $01, $00, $00, $00
-                       .byte $01, $00, $00, $00, $00 
+                       .byte $00, $00, $00, $00, $00 
 
 * = $4100
 actual_plot_buffer:    .text "     "
