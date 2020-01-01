@@ -1,6 +1,8 @@
 .import source "vars.asm"
 
-:BasicUpstart2(start)
+// :BasicUpstart2(start)
+
+* = $4000
 
 start:
 
@@ -17,7 +19,31 @@ sta $d021
 .var num_cities = $06
 .var blast_radius = $06
 
-two_tribes:  	
+two_tribes:     
+            lda #$ff
+            sta plot_delay
+
+            ldx #$12
+            lda #<intro_text
+            sta text_src
+            lda #>intro_text
+            sta text_src+1
+!loop:      jsr text_plot
+            jsr delay
+            jsr delay            
+            lda text_src
+            sec
+            adc #$27
+            sta text_src
+            bcc !next+
+            inc text_src+1
+!next:      dex
+            bne !loop-            
+
+                jsr delay
+                jsr delay
+
+
                 lda #$00
                 sta plot_delay
 
@@ -46,9 +72,9 @@ two_tribes:
                 jsr text_plot
 !menu_loop:		
                 jsr Keyboard
-                bcs !next+
-                cmp #$ff
-                beq !next+
+                // bcs !next+
+                // cmp #$ff
+                // beq !next+
                 // Check A for Alphanumeric keys
                 cmp #$31
                 bcc !next+
@@ -60,7 +86,7 @@ two_tribes:
 !next:
                 lda side
                 bne !next+
-		jmp !menu_loop-
+		        jmp !menu_loop-
 !next:          
                 // Display map
                 clc
@@ -144,6 +170,7 @@ two_tribes:
 // Could factor this out into a function
 
                 ldx #$00
+                clc
 !menu_loop:              
                 lda auto
                 bne !next+
@@ -154,11 +181,14 @@ two_tribes:
 !next:                
                 txa
                 pha
-                jsr Keyboard
-                bcs !next+
-                cmp #$ff
-                beq !next+
+!again:         jsr Keyboard
+                // bcs !next+
+                // cmp #$ff
+                // beq !next+
                 // Check A for Alphanumeric keys
+                cmp last_key
+                beq !again-
+                sta last_key
                 cmp #$31
                 bcc !next+
                 cmp #$36
@@ -223,9 +253,13 @@ do_targets:
                 jsr dialogue
                 pla
                 tay
-!end:           jmp !end-
+!end:           jsr Keyboard
+                cmp #$0d
+                bne !end-
+                rts
 
-!cont:          pla
+!cont:          
+                pla
                 tay
                 jmp !turn-
                 rts
@@ -394,6 +428,7 @@ TempY: .byte $00
 side:           .byte $00
 human:          .byte $00, $00
 auto:           .byte $00
+last_key:       .byte $ff
 
 game_round:     .byte $06
 
@@ -477,7 +512,7 @@ ussr_cities:
                 .text "tomsk     \0"
                 .byte $00, $00
                 .byte $02, $09
-                .byte $03, $0d
+                .byte $13, $0d
                 .byte $05
 
                 .byte $03, $11
@@ -532,9 +567,11 @@ selected_targets_text:
 
 
 telemetry:
-                lda #$20
+                tya
+                pha
+                lda #$20 // <screen+(40*20)
                 sta fill_mem_from
-                lda #$07
+                lda #$83 // >screen+(40*20)
                 sta fill_mem_from+1
                 lda #$20
                 sta fill_mem_char
@@ -549,7 +586,28 @@ telemetry:
 
                 jsr text_plot
 
+                // update data
+                lda new_data_prt
+                clc
+                adc #$84
+                sta new_data_prt
+                bcc !next+
+                inc new_data_prt+1
+!next:                
+                lda new_data_prt
+                sta $02
+                lda new_data_prt+1
+                sta $03
+                ldy #$00
+!loop:          lda ($02),y
+                sta trajectory_data,y
+                iny
+                cpy #$85
+                bne !loop- 
+                pla
+                tay
                 rts
+new_data_prt:   .byte <trajectory_data, >trajectory_data
 
 tele_text:
                 .byte $01, $14
@@ -568,23 +626,251 @@ tele_text:
 trajectory_data:
                 .byte $01, $16
                 .text "a-5214-a "
-tr_1:           .text "9226 5234\n"
+                .text "9226 5234\n"
                 .byte $01, $17
                 .text "       b "
-tr_2:           .text "6824 5132\n"
+                .text "6824 5132\n"
                 .byte $01, $18
                 .text "       c "
-tr_3:           .text "2196 7261\n"
+                .text "2196 7261\n"
 
                 .byte $15, $16
-                .text "a-5214-a "
-tr_4:           .text "9226 5234\n"
+                .text "a-5212-a "
+                .text "1282 1214\n"
                 .byte $15, $17
                 .text "       b " 
-tr_5:           .text "6824 5132\n"
+                .text "1534 1232\n"
                 .byte $15, $18
                 .text "       c "
-tr_6:           .text "2196 7261\0"
+                .text "0096 8261\0"
+///
+                .byte $01, $16
+                .text "z-af12-b "
+                .text "9116 5a34\n"
+                .byte $01, $17
+                .text "       e "
+                .text "1324 5122\n"
+                .byte $01, $18
+                .text "       2 "
+                .text "2001 1971\n"
+
+                .byte $15, $16
+                .text "x-201a-2 "
+                .text "1142 31a4\n"
+                .byte $15, $17
+                .text "       3 " 
+                .text "1214 1032\n"
+                .byte $15, $18
+                .text "       4 "
+                .text "0096 8afs\0"
+///
+                .byte $01, $16
+                .text "a-w254-a "
+                .text "1114 5132\n"
+                .byte $01, $17
+                .text "       c "
+                .text "2324 51x2\n"
+                .byte $01, $18
+                .text "       x "
+                .text "2021 177a\n"
+
+                .byte $15, $16
+                .text "b-1110-1 "
+                .text "1142 31a4\n"
+                .byte $15, $17
+                .text "       5 " 
+                .text "4254 1212\n"
+                .byte $15, $18
+                .text "       7 "
+                .text "0126 842s\0"
+///
+                .byte $01, $16
+                .text "c-cccp-1 "
+                .text "1004 1212\n"
+                .byte $01, $17
+                .text "       2 "
+                .text "1214 xx12\n"
+                .byte $01, $18
+                .text "       3 "
+                .text "3421 aa1a\n"
+
+                .byte $15, $16
+                .text "b-c120-4 "
+                .text "1192 12a4\n"
+                .byte $15, $17
+                .text "       5 " 
+                .text "4124 1221\n"
+                .byte $15, $18
+                .text "       6 "
+                .text "3xa6 812s\0"
+
+///
+                .byte $01, $16
+                .text "a-usz1-2 "
+                .text "1204 1ad2\n"
+                .byte $01, $17
+                .text "       7 "
+                .text "0001 xd2a\n"
+                .byte $01, $18
+                .text "       4 "
+                .text "1212 bf1a\n"
+
+                .byte $15, $16
+                .text "b-tra0-2 "
+                .text "1001 99a4\n"
+                .byte $15, $17
+                .text "       1 " 
+                .text "2112 12af\n"
+                .byte $15, $18
+                .text "       3 "
+                .text "300x ffff\0"
+
+///
+                .byte $01, $16
+                .text "1-1121-3 "
+                .text "101a 1112\n"
+                .byte $01, $17
+                .text "       2 "
+                .text "0001 xd2a\n"
+                .byte $01, $18
+                .text "       8 "
+                .text "1212 bf1a\n"
+
+                .byte $15, $16
+                .text "b-tra0-4 "
+                .text "1215 99a4\n"
+                .byte $15, $17
+                .text "       2 " 
+                .text "0012 12af\n"
+                .byte $15, $18
+                .text "       6 "
+                .text "211x fdaf\0"
+
+///
+                .byte $01, $16
+                .text "4-21af-2 "
+                .text "1022 99ff\n"
+                .byte $01, $17
+                .text "       2 "
+                .text "0312 xf21\n"
+                .byte $01, $18
+                .text "       8 "
+                .text "17ad 993a\n"
+
+                .byte $15, $16
+                .text "5-cca--4 "
+                .text "1215 1124\n"
+                .byte $15, $17
+                .text "       2 " 
+                .text "0752 123f\n"
+                .byte $15, $18
+                .text "       6 "
+                .text "671a 1213\0"
+
+///
+                .byte $01, $16
+                .text "1-21---3 "
+                .text "1022 99ff\n"
+                .byte $01, $17
+                .text "       9 "
+                .text "0312 xf21\n"
+                .byte $01, $18
+                .text "       a "
+                .text "1aa7 123a\n"
+
+                .byte $15, $16
+                .text "5-dfa--4 "
+                .text "1005 6714\n"
+                .byte $15, $17
+                .text "       6 " 
+                .text "2112 ffff\n"
+                .byte $15, $18
+                .text "       7 "
+                .text "99xa 2113\0"
+
+///
+                .byte $01, $16
+                .text "1-1111-0 "
+                .text "1000 0010\n"
+                .byte $01, $17
+                .text "       1 "
+                .text "0001 x111\n"
+                .byte $01, $18
+                .text "       0 "
+                .text "1212 x101\n"
+
+                .byte $15, $16
+                .text "0-0000-0 "
+                .text "1101 1101\n"
+                .byte $15, $17
+                .text "       0 " 
+                .text "001x 0011\n"
+                .byte $15, $18
+                .text "       1 "
+                .text "010x 0010\0"
+
+///
+                .byte $01, $16
+                .text "1-1111-0 "
+                .text "---0 0--0\n"
+                .byte $01, $17
+                .text "       1 "
+                .text "---1 x--1\n"
+                .byte $01, $18
+                .text "       0 "
+                .text "-err 0---\n"
+
+                .byte $15, $16
+                .text "1-ffff-f "
+                .text "11-- -fff\n"
+                .byte $15, $17
+                .text "       x " 
+                .text "xxxx ----\n"
+                .byte $15, $18
+                .text "       x "
+                .text "xxxx xxxx\0"
+
+///
+                .byte $01, $16
+                .text "1----1- 0 "
+                .text "--  0--0\n"
+                .byte $01, $17
+                .text "       0 "
+                .text "00 1 x-ff\n"
+                .byte $01, $18
+                .text "       0 "
+                .text "-err   f-\n"
+
+                .byte $15, $16
+                .text "1-ff---f "
+                .text "11-- -x f\n"
+                .byte $15, $17
+                .text "       x " 
+                .text "xxxx -xx-\n"
+                .byte $15, $18
+                .text "       x "
+                .text "xxxx xeol\0"
+
+///
+                .byte $01, $16
+                .text "-----n- 0"
+                .text "--  ---- \n"
+                .byte $01, $17
+                .text "       0 "
+                .text "00      f\n"
+                .byte $01, $18
+                .text "       0"
+                .text "-      f-\n"
+
+                .byte $15, $16
+                .text "  ..---f "
+                .text "1 -- -0 f\n"
+                .byte $15, $17
+                .text "       x " 
+                .text "x x -. .-\n"
+                .byte $15, $18
+                .text "       x "
+                .text "x  x     \0"
 
 dialogue:       
 
@@ -618,6 +904,45 @@ dialogue:
             bne !loop-            
             rts
 
+intro_text:
+
+.byte $00,$00
+.text "                                    \0"
+.byte $00,$00
+.text "logon: joshua                       \0"
+.byte $00,$02
+.text "greetings professor falken.         \0"
+.byte $00,$04
+.text "hello.                              \0"
+.byte $00,$06
+.text "how are you feeling today?          \0"
+.byte $00,$08
+.text "i'm fine how are you?               \0"
+.byte $00,$09
+.text "excellent. it's been a long time.   \0"
+.byte $00,$0a
+.text "can you explain the removal of your \0"
+.byte $00,$0b
+.text "user account on 6/23/73?            \0"
+.byte $00,$0d
+.text "people sometimes make mistakes.     \0"
+.byte $00,$0e
+.text "yes they do. shall we play a game?  \0"
+.byte $00,$10
+.text "love to.                            \0"
+.byte $00,$11
+.text "how about global thermonuclear war? \0"
+.byte $00,$12
+.text "wouldn't you prefer                 \0"
+.byte $00,$13
+.text "a good game of chess?               \0"
+.byte $00,$15
+.text "later.                              \0"
+.byte $00,$17
+.text "let's play global thermonuclear war.\0"
+.byte $00,$18
+.text "fine.                               \0"
+
 dialogue_text:
 
 .byte $06, $03
@@ -633,7 +958,7 @@ dialogue_text:
 .byte $06, $11
 .text "how about a nice game of  \0"
 .byte $06, $13
-.text "bad king john?            \0"
+.text "chess?                    \0"
 
 delay_outer:     .byte $9f
 delay_inner:     .byte $ff
@@ -731,3 +1056,9 @@ bang:
 .import source "circ.asm"
 .import source "fill.asm"
 .import source "nine_slice.asm"
+
+
+// x, 
+// a, z
+// s, d
+// x, c

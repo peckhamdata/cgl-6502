@@ -13,9 +13,9 @@ offset:		  .byte $00, $00
 // 				  .byte $42, $7e, $d4
 // 				  .byte $42, $7e, $d4
 
-nine_slice_chars: .byte $4f, $77, $50
-				  .byte $74, $20, $67
-				  .byte $4c, $6f, $7a
+nine_slice_chars: .byte $4f, $63, $50
+				  .byte $65, $20, $67
+				  .byte $4c, $64, $7a
 
 nine_slice_h_tmp: .byte $00
 nine_slice_w_tmp: .byte $00

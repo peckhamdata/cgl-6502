@@ -1,8 +1,8 @@
 p0:                 .byte $0
 p1:                 .byte $0
 
-plot_buffer_lo:     .byte $00
-plot_buffer_hi:     .byte $04
+plot_buffer_lo:     .byte <screen
+plot_buffer_hi:     .byte >screen
 plot_buffer_x:      .byte $28
 plot_buffer_y:      .byte $19
 plot_char:          .byte $3a
