@@ -84,7 +84,7 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
 
             // Do color - don't do this on the PET obvs
             lda plot_color_difference
-            beq no_color
+            beq !no_color+
             lda $03
             pha
             clc
@@ -94,13 +94,13 @@ enterLoop:  // accumulating multiply entry point (enter with .A=lo, .Y=hi)
             sta ($02),y
             pla
             sta $03
-no_color:
+!no_color:
             pla
             sta p1
             
-            // lda curve_is_filled
-            // beq !next+
-            // jsr plot_vertical
+            lda curve_is_filled
+            beq !next+
+            jsr plot_vertical
 !next:
 
 !exit:      
@@ -126,35 +126,36 @@ no_color:
 
 // rename 'curve' specific variables
 
-// plot_vertical:      ldx p1
-//                     cpx plot_buffer_y
-//                     beq !exit+    
-//                     cpy plot_buffer_x
-//                     bcs !exit+
-// !loop:              lda $02
-//                     clc
-//                     adc plot_buffer_x
-//                     sta $02
-//                     bcc !next+
-//                     inc $03
-// !next:
-//                     lda curve_fill_char
-//                     sta ($02),y
+plot_vertical:      ldx p1
+                    cpx plot_buffer_y
+                    beq !exit+    
+                    cpy plot_buffer_x
+                    bcs !exit+
+!loop:              lda $02
+                    clc
+                    adc plot_buffer_x
+                    sta $02
+                    bcc !next+
+                    inc $03
+!next:
+                    lda curve_fill_char
+                    sta ($02),y
 
-//                     // Do color - don't do this on the PET obvs
+                    // Do color - don't do this on the PET obvs
+                    lda plot_color_difference
+                    beq !next+
+                    lda $03
+                    pha
+                    clc
+                    adc plot_color_difference
+                    sta $03
+                    lda curve_fill_color
+                    sta ($02),y
+                    pla
+                    sta $03
+!next:
+                    inx
+                    cpx plot_buffer_y
+                    bne !loop-
 
-//                     lda $03
-//                     pha
-//                     clc
-//                     adc plot_color_difference
-//                     sta $03
-//                     lda curve_fill_color
-//                     sta ($02),y
-//                     pla
-//                     sta $03
-
-//                     inx
-//                     cpx plot_buffer_y
-//                     bne !loop-
-
-// !exit:              rts
+!exit:              rts

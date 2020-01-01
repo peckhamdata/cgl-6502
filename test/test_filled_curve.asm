@@ -5,9 +5,9 @@ test_filled_curve:
 
                 lda #$01
                 sta curve_p1_x
-                lda #$05     // #$13
+                lda #$13
                 sta curve_p2_x
-                lda #$20 // #$27
+                lda #$27
                 sta curve_p3_x
 
                 lda #$29
@@ -17,15 +17,15 @@ test_filled_curve:
                 lda #$29
                 sta curve_p3_y
 
-                lda #$00 // <actual_curve_buffer
+                lda #<actual_filled_curve_buffer
                 sta plot_buffer_lo
-                lda #$04 // #>actual_curve_buffer
+                lda #>actual_filled_curve_buffer
                 sta plot_buffer_hi
                 lda #$28
                 sta plot_buffer_x
                 lda #$18
                 sta plot_buffer_y            
-                lda #$a0
+                lda #$3a
                 sta plot_char
                 sta curve_fill_char
                 lda #$01
@@ -36,28 +36,6 @@ test_filled_curve:
                 lda #$0f
                 sta plot_color
                 sta curve_fill_color
-
-                jsr curve_plot
-
-                lda #$0a
-                sta curve_p1_x
-                lda #$20     // #$13
-                sta curve_p2_x
-                lda #$27 // #$27
-                sta curve_p3_x
-
-                lda #$a0
-                sta plot_char
-                sta curve_fill_char
-                lda #$0c
-                sta plot_color
-                sta curve_fill_color
-                lda #$29
-                sta curve_p1_y
-                lda #$04
-                sta curve_p2_y
-                lda #$29
-                sta curve_p3_y
 
                 jsr curve_plot
 
@@ -80,10 +58,38 @@ test_filled_curve:
                 lda #green
                 jmp !result+
     !fail:      lda #red
-    // !result:    sta $d020
+    !result:    sta $d020
                 rts
 
+actual_filled_curve_buffer:
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+
 expected_filled_curve_buffer:
+
 .text "                                        "
 .text "                                        "
 .text "                                        "
@@ -93,19 +99,19 @@ expected_filled_curve_buffer:
 .text "                                        "
 .text "                                        "
 .text "                                        "
-.text "                                        "
-.text "                                        "
-.text "                                        "
-.text "     :                                  "
-.text "    :::                                 "
-.text "   :::::                                "
-.text "   :::::                                "
-.text "  :::::::                               "
-.text "  :::::::                               "
-.text "  :::::::                               "
-.text " :::::::::                              "
-.text " :::::::::                              "
-.text " :::::::::                              "
-.text " :::::::::                              "       
-.text " ::::::::::                             "
-.text " ::::::::::                             "
+.text "                  ::::                  "
+.text "               ::::::::::               "
+.text "             ::::::::::::::             "
+.text "           :::::::::::::::::            "
+.text "          :::::::::::::::::::           "
+.text "          ::::::::::::::::::::          "
+.text "         ::::::::::::::::::::::         "
+.text "        ::::::::::::::::::::::::        "
+.text "       ::::::::::::::::::::::::::       "
+.text "       ::::::::::::::::::::::::::       "
+.text "      ::::::::::::::::::::::::::::      "
+.text "     ::::::::::::::::::::::::::::::     "
+.text "     ::::::::::::::::::::::::::::::     "
+.text "    ::::::::::::::::::::::::::::::::    "
+.text "    ::::::::::::::::::::::::::::::::    "
+.text "    ::::::::::::::::::::::::::::::::    "

@@ -9,7 +9,7 @@ test_circ:
                 sta plot_buffer_lo
                 lda #>actual_circ_buffer
                 sta plot_buffer_hi
-                lda #$10
+                lda #$28 // 10
                 sta plot_buffer_x
                 lda #$0a
                 sta plot_buffer_y
@@ -24,9 +24,9 @@ test_circ:
                 sta actual_plot_buffer_lo
                 lda #>actual_circ_buffer
                 sta actual_plot_buffer_hi
-                lda #$10
+                lda #$28
                 sta buffers_x
-                lda #$09
+                lda #$0a
                 sta buffers_y
                 jsr compare_buffers
                 lda cmp_res
@@ -38,29 +38,28 @@ test_circ:
                 rts
 
 actual_circ_buffer:
-.text "                "
-.text "                "
-.text "                "
-.text "                "
-.text "                "
-.text "                "
-.text "                "
-.text "                "
-.text "                "
-.text "                "
-
-.byte $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
-.byte $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
+.text "                                        "
 
 expected_circ_buffer:	
  
-.text "     :          "
-.text "    : :         "
-.text "  ::   ::       "
-.text "  :     :       "
-.text " :       :      "
-.text ":        :      "
-.text " :       :      "
-.text "  :     :       "
-.text "  ::   ::       "
-.text "    :::         "
+.text "                                        "
+.text "    :::                                 "
+.text "  ::   ::                               "
+.text "  :     :                               "
+.text " :       :                              "
+.text " :       :                              "
+.text " :       :                              "
+.text "  :     :                               "
+.text "  ::   ::                               "
+.text "    :::                                 "
+.text "                                        "

@@ -16,8 +16,8 @@ circ_plot:      txa
                 sta xx
                 sta ddf_x
 
-                sec
                 lda #$01
+                sec
                 sbc circ_radius
                 sta f
 
@@ -29,10 +29,12 @@ circ_plot:      txa
                 lda circ_x
                 sta p0
                 lda circ_y
+                clc
                 adc circ_radius
                 sta p1
                 jsr plot_point
                 lda circ_y
+                sec
                 sbc circ_radius
                 sta p1
                 jsr plot_point
@@ -40,6 +42,7 @@ circ_plot:      txa
                 lda circ_y
                 sta p1
                 lda circ_x
+                sec
                 sbc circ_radius
                 sta p0
                 jsr plot_point
@@ -47,6 +50,7 @@ circ_plot:      txa
                 lda circ_y
                 sta p1
                 lda circ_x
+                clc
                 adc circ_radius
                 sta p0
                 jsr plot_point
@@ -66,6 +70,7 @@ circ_plot:      txa
                 adc #$02
                 sta ddf_y
                 lda f
+                clc
                 adc ddf_y
                 sta f
         !next:  inc xx
@@ -76,6 +81,7 @@ circ_plot:      txa
                 lda f
                 clc
                 adc ddf_x
+                clc
                 adc #$01
                 sta f       
 

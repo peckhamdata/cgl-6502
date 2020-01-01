@@ -1,19 +1,12 @@
 
-        // Screen Colour
-        .var white=1
-        .var green=5
-        .var red=2
 test_screen_left:
-        lda #white
-        sta $d020
-        sta $d021
 
         // given a screen of lines that look like original
 
         ldx #$00
-        lda #$00
+        lda #<screen
         sta $02
-        lda #$04
+        lda #>screen
         sta $03
 !col:   ldy #$00
 !line:  lda original,y
@@ -33,9 +26,9 @@ test_screen_left:
         // when we move the screen left
         jsr screen_left
         //  then we expect each row to look like expected
-        lda #$00
+        lda #<screen
         sta $02
-        lda #$04
+        lda #>screen
         sta $03
         ldx #$00
 !col:   ldy #$00

@@ -2,7 +2,6 @@
 
 message:    .byte $0f, $03
             .text "hello world\n"
-            .byte $0a
             .byte $01, $00
             .text "how are you?\0"
 
@@ -35,7 +34,7 @@ test_text:
             sta actual_plot_buffer_lo
             lda #>actual_text_buffer
             sta actual_plot_buffer_hi
-            lda #$27    
+            lda #$28    
             sta buffers_x
             lda #$05
             sta buffers_y
@@ -49,7 +48,7 @@ test_text:
             rts
 
 expected_text_buffer:
-       
+
 .text " how are you?                           "
 .text "                                        "
 .text "                                        "
@@ -64,3 +63,4 @@ actual_text_buffer:
 .text "                                        "
 .text "                                        "
 .text "                                        "
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff

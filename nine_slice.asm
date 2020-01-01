@@ -5,14 +5,6 @@ nine_slice_h: .byte $00
 
 offset:		  .byte $00, $00
 
-// nine_slice_chars: .byte $a0, $a0, $a0
-// 				  .byte $a0, $a0, $a0
-// 				  .byte $a0, $a0, $a0
-
-// nine_slice_chars: .byte $46, $46, $46
-// 				  .byte $42, $7e, $d4
-// 				  .byte $42, $7e, $d4
-
 nine_slice_chars: .byte $4f, $63, $50
 				  .byte $65, $20, $67
 				  .byte $4c, $64, $7a
@@ -37,13 +29,14 @@ nine_slice_plot:	txa
 					iny
 !next:				sta offset
 					sty offset+1
-					clc
 					lda plot_buffer_lo
+					clc
 					adc offset
 					sta $02
 					bcc !next+
 					inc offset+1
 !next:				lda plot_buffer_hi
+					clc
 					adc offset+1
 					sta $03
 
@@ -75,15 +68,18 @@ nine_slice_plot:	txa
 !loop:				lda nine_slice_chars,x
 					sta ($02),y
 					// Do color - need to make this optional for the PET
-					// lda $03
-					// pha
-				 //    clc	
-					// adc plot_color_difference
-					// sta $03
-					// lda nine_slice_color
-					// sta ($02),y
-					// pla
-					// sta $03
+					lda plot_color_difference
+					beq !no_color+
+					lda $03
+					pha
+				    clc	
+					adc plot_color_difference
+					sta $03
+					lda nine_slice_color
+					sta ($02),y
+					pla
+					sta $03
+!no_color:					
 					iny
 					cpy #$01
 					bne !next+

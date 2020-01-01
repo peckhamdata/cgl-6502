@@ -1,2 +1,4 @@
-        .var screen=$0400
-        .var screen_right=$0427
+        // Screen Colour
+        .var white=1
+        .var green=5
+        .var red=2

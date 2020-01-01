@@ -66,6 +66,9 @@ test_plot_point:
 !fail:      lda #red
 !result:    sta $d020
 
+            lda #$00
+            sta plot_color_difference
+
             rts
 
 // Given X that is out of bounds

@@ -80,10 +80,7 @@ test_screen_buffer:
         bne !ol-
 !pass:  lda #green
         jmp !exit+
-!fail:  sta $0400
-        lda tmp
-        sta $0401
-        lda #red
+!fail:  lda #red
 !exit:  sta $d020
 
         rts

@@ -1,9 +1,9 @@
 screen_left:    txa
                 pha
                 ldx #$00
-                lda #$00
+                lda #<screen
                 sta $02
-                lda #$04
+                lda #>screen
                 sta $03
 row_loop:       ldy #$00
 col_loop:       inc $02

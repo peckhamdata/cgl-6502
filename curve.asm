@@ -1,10 +1,10 @@
-curve_p1_x:         .byte 0
-curve_p2_x:         .byte 0
-curve_p3_x:         .byte 0
+curve_p1_x:         .byte 1
+curve_p2_x:         .byte 15
+curve_p3_x:         .byte 35
 
 curve_p1_y:         .byte 0
-curve_p2_y:         .byte 0
-curve_p3_y:         .byte 0
+curve_p2_y:         .byte 8
+curve_p3_y:         .byte 13
 
 curve_num_segments: .byte $09
                     .byte $00

@@ -1,23 +1,45 @@
+.import source "vars.asm"
+
+.var screen=dummy_screen
+.var screen_right=dummy_screen+$27
+
+.macro run_test(test) {
+        txa
+        pha
+        jsr test
+        pla
+        tax
+        lda $d020
+        cmp #red
+        bne !cont+
+        rts
+!cont:  lda #$2e
+        sta $0400,x
+        inx
+}
+
 // test bird
 :BasicUpstart2(start)
 
+dummy_screen: .fill $0400, 0
+
 start:
-        // jsr test_screen_left
-        // jsr test_screen_buffer
-        // jsr test_double_buffer
-        // jsr test_plot_point
-        // jsr test_init_line
-        // jsr test_plot_line
-        // jsr test_copy_mem
-        jsr test_curve
-        // jsr test_circ
-        // jsr test_text
-        // jsr test_filled_curve
-        // jsr test_nine_slice
-        // jsr test_fill_mem
+        ldx #$00
+        run_test(test_screen_left)
+        run_test(test_screen_buffer)
+        run_test(test_double_buffer)
+        run_test(test_plot_point)
+        run_test(test_init_line)
+        run_test(test_plot_line)
+        run_test(test_copy_mem)
+        run_test(test_curve)
+        run_test(test_circ)
+        run_test(test_text)
+        run_test(test_filled_curve)
+        run_test(test_fill_mem)
+        run_test(test_nine_slice)
         rts
 
-.import source "vars.asm"
 .import source "tools.asm"
 .import source "test/test_screen_left.asm"
 .import source "screen_left.asm"
