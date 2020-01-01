@@ -18,7 +18,6 @@
         inx
 }
 
-// test bird
 :BasicUpstart2(start)
 
 dummy_screen: .fill $0400, 0
