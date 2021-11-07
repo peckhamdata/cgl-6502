@@ -1,9 +1,9 @@
 test_circ:		
-				lda #$04
-				sta circ_radius
-				lda #$05
-				sta circ_x
-				sta circ_y
+		lda #$04
+		sta circ_radius
+		lda #$05
+		sta circ_x
+		sta circ_y
 
                 lda #<actual_circ_buffer
                 sta plot_buffer_lo
